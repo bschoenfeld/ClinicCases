@@ -88,7 +88,11 @@ function addDetailTabs(id,newCase) {
                         $(panelTarget).find('.case_detail_nav li#item2').addClass('new_case').trigger('click');
                     } else {
                         //load case notes for initial view
-                        loadCaseNotes(panelTarget, id);
+                        //loadCaseNotes(panelTarget, id);
+
+                        // load case details for inital view
+                        $(panelTarget).find('.case_detail_nav li#item2').trigger('click');
+                        
                         //Notify of conflicts
                         checkConflicts(id);
                     }
