@@ -17,6 +17,10 @@ function bindPostVals($query_string,$open_close)
 		}
 	}
 
+	// Clear out organization so user can't set it
+	$cols .= "`organization` = :organization,";
+	$values[':organization'] = "";
+
 	//Time opened and closed is not presented to user.  So, we add the values.
 	$now =  date('Y-m-d H:i:s');
 
