@@ -1,4 +1,5 @@
 <?php
+require_once('timezone.php');
 require_once('_CONFIG.php');
 
 try {
