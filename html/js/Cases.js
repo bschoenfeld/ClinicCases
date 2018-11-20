@@ -115,6 +115,8 @@ $(document).ready(function() {
                         //When page loads, default filter is applied: open cases
                         // (i.e., all cases where the date close field is empty.
                             oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
+                            oTable.fnFilter('', oTable.fnGetColumnIndex('Ready for attorney callback'));
+                            
                             //resizes the table whenever parent element size changes
                             $(window).bind('resize', function() {
                                 oTable.fnDraw(false);
@@ -132,7 +134,7 @@ $(document).ready(function() {
                             //Add case status seletctor
                             $('div.dataTables_filter').append('<select id="chooser"><option value="open" '+
                             'selected=selected>Open Cases Only</option><option value="closed">Closed Cases Only' +
-                            '</option><option value="all">All Cases</option></select>  <a href="#" id="set_advanced">' +
+                            '</option><option value="attorney">Attorney Callback Cases</option><option value="all">All Cases</option></select>  <a href="#" id="set_advanced">' +
                             'Advanced Search</a>');
 
                             //Have ColVis and reset buttons pick up the DTTT class
@@ -169,14 +171,22 @@ $(document).ready(function() {
                                     case 'all':
                                         chooserVal = 'open and closed';
                                         oTable.fnFilter('', oTable.fnGetColumnIndex('Date Close'));
+                                        oTable.fnFilter('', oTable.fnGetColumnIndex('Ready for attorney callback'));
                                         break;
                                     case 'open':
                                         chooserVal = 'open';
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
+                                        oTable.fnFilter('', oTable.fnGetColumnIndex('Ready for attorney callback'));
                                         break;
                                     case 'closed':
                                         chooserVal = 'closed';
                                         oTable.fnFilter('^.+$', oTable.fnGetColumnIndex('Date Close'), true, false);
+                                        oTable.fnFilter('', oTable.fnGetColumnIndex('Ready for attorney callback'));
+                                        break;
+                                    case 'attorney':
+                                        chooserVal = 'attorney callback';
+                                        oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
+                                        oTable.fnFilter('yes', oTable.fnGetColumnIndex('Ready for attorney callback'));
                                         break;
                                 }
                             });
