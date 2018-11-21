@@ -17,7 +17,7 @@ function escapeHtml(text) {
 
 $(document).ready(function() {
     //set the intial value for the caseStatus span on load
-    var chooserVal = 'open';
+    var chooserVal = '';
 
     //Get the column definitions to use in oTable
     $.ajax({
@@ -112,10 +112,8 @@ $(document).ready(function() {
                             }
                         ],
                         'fnInitComplete': function() {
-                        //When page loads, default filter is applied: open cases
-                        // (i.e., all cases where the date close field is empty.
-                            oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
-                            oTable.fnFilter('', oTable.fnGetColumnIndex('Ready for attorney callback'));
+                            // When page loads, clear all filters
+                            fnResetFiltersButNotColumns();
                             
                             //resizes the table whenever parent element size changes
                             $(window).bind('resize', function() {
@@ -132,9 +130,9 @@ $(document).ready(function() {
                             //See http://datatables.net/forums/comments.php?DiscussionID=3318
 
                             //Add case status seletctor
-                            $('div.dataTables_filter').append('<select id="chooser"><option value="open" '+
-                            'selected=selected>Open Cases Only</option><option value="closed">Closed Cases Only' +
-                            '</option><option value="attorney">Attorney Callback Cases</option><option value="all">All Cases</option></select>  <a href="#" id="set_advanced">' +
+                            $('div.dataTables_filter').append('<select id="chooser"><option value="all" selected=selected>All Cases</option>'+
+                            '<option value="open">Open Cases Only</option><option value="closed">Closed Cases Only' +
+                            '</option><option value="attorney">Need Attorney Callback</option></select>  <a href="#" id="set_advanced">' +
                             'Advanced Search</a>');
 
                             //Have ColVis and reset buttons pick up the DTTT class
@@ -167,25 +165,21 @@ $(document).ready(function() {
 
                             //Change the case status select
                             $('#chooser').live('change', function(event) {
+                                fnResetFiltersButNotColumns(false);
+
                                 switch ($(this).val()) {
-                                    case 'all':
-                                        chooserVal = 'open and closed';
-                                        oTable.fnFilter('', oTable.fnGetColumnIndex('Date Close'));
-                                        oTable.fnFilter('', oTable.fnGetColumnIndex('Ready for attorney callback'));
+                                    case 'all':        
                                         break;
                                     case 'open':
                                         chooserVal = 'open';
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
-                                        oTable.fnFilter('', oTable.fnGetColumnIndex('Ready for attorney callback'));
                                         break;
                                     case 'closed':
                                         chooserVal = 'closed';
                                         oTable.fnFilter('^.+$', oTable.fnGetColumnIndex('Date Close'), true, false);
-                                        oTable.fnFilter('', oTable.fnGetColumnIndex('Ready for attorney callback'));
                                         break;
                                     case 'attorney':
                                         chooserVal = 'attorney callback';
-                                        oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
                                         oTable.fnFilter('yes', oTable.fnGetColumnIndex('Ready for attorney callback'));
                                         break;
                                 }
@@ -204,10 +198,10 @@ $(document).ready(function() {
                                     $('thead tr.advanced').toggle('slow');
                                     $('#second_open_cell, #second_close_cell').css({'visibility': 'hidden'});
 
-                                    //Set the big filter to all cases
-                                    oTable.fnFilter('', oTable.fnGetColumnIndex('Date Close'), true, false);
+                                    // Clear the big filter
                                     $('#chooser').val('all');
-                                    chooserVal = 'open and closed';
+                                    chooserVal = '';
+                                    fnResetFiltersButNotColumns();
                                 }
                                 oTable.fnDraw();
                             });
@@ -326,8 +320,7 @@ $(document).ready(function() {
         }
     });
 
-    //Reset displayed data
-    function fnResetAllFilters() {
+    function fnResetFiltersButNotColumns(resetSelect=true) {
         var oSettings = oTable.fnSettings();
 
         //reset advanced header selects
@@ -336,27 +329,31 @@ $(document).ready(function() {
         }
 
         //reset the main filter
+        chooserVal = '';
         oTable.fnFilter('');
-
-        //reset the columns to their original order.
-        ColReorder.fnReset(oTable);
 
         //reset the user display for inputs and selects
         $('input').each(function() {
             this.value = '';
         });
-        $('select').each(function() {
-            this.selectedIndex = '0';
-        });
+        if(resetSelect) {
+            $('select').each(function() {
+                this.selectedIndex = '0';
+            });
+        }
         $('#addOpenRow, #addCloseRow').each(function() {
             $(this).text('Add Condition');
         });
         $('#second_open_cell, #second_close_cell').css({'visibility': 'hidden'});
         $('thead tr.advanced_2').hide('slow');
+    }
 
-        //return to default open cases filter
-        oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
-        chooserVal = 'open';
+    //Reset displayed data
+    function fnResetAllFilters() {
+        fnResetFiltersButNotColumns();
+
+        //reset the columns to their original order.
+        ColReorder.fnReset(oTable);
 
         //return to default sort - Last Name
         oTable.fnSort([[oTable.fnGetColumnIndex('Last Name'), 'asc']]);
