@@ -45,15 +45,9 @@
 			<ul>
 				<li><a class="lost_password" href="#">Forgot your username or password?</a></li>
 				<li><a href="newaccount/">Need an account?</a></li>
-				<li>Help and information available at <a href="http://cliniccases.com">cliniccases.com</a></li>
-				<li>Ask questions at the <a href="http://cliniccases.com/forums">ClinicCases forum</a></li>
+				<li>Questions or support, contact Phil Storey, <a href="mailto:phil@vplc.org">phil@vplc.org</a></li>
 			</ul>
-
-			<a href="http://www.facebook.com/pages/ClinicCases/130258760379259" target="_new" title="Like ClinicCases on Facebook"><img src="html/images/facebook.png"></a>
-            &nbsp;
-            <a href="https://github.com/judsonmitchell/ClinicCases" target="_new" title="Fork ClinicCases on Github"><img src="html/images/github.png"></a>
-            &nbsp;
-            <a href="http://twitter.com/cliniccases" target="_new" title="Follow ClinicCases on Twitter"><img src="html/images/twitter.png"></a>
+			
 		</div>
 
 	</div>
