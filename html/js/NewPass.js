@@ -35,7 +35,7 @@ $(document).ready(function() {
 						else
 						{
 							notify(serverResponse.message);
-							var successText = '<p><b>Password change successful.</b></p><p><a href="index.php?i=Home.php">Continue</a></p>';
+							var successText = '<p><b>Password change successful.</b></p><p><a href="index.php?i=Cases.php">Continue</a></p>';
 							$('div.force_new_password_content').html(successText);
 
 						}

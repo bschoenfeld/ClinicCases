@@ -130,7 +130,7 @@ else
 		else
 		{
 		//If login is successful, go to home page
-			$target_url = CC_BASE_URL . "index.php?i=Home.php";
+			$target_url = CC_BASE_URL . "index.php?i=Cases.php";
 		}
 
 		$json = array('login'=>'true','message'=>'Logging you in....','url'=>'' . $target_url . '');
