@@ -130,10 +130,14 @@ $(document).ready(function() {
                             //See http://datatables.net/forums/comments.php?DiscussionID=3318
 
                             //Add case status seletctor
-                            $('div.dataTables_filter').append('<select id="chooser"><option value="all" selected=selected>All Cases</option>'+
-                            '<option value="open">Open Cases Only</option><option value="closed">Closed Cases Only' +
-                            '</option><option value="attorney">Need Attorney Callback</option></select>  <a href="#" id="set_advanced">' +
-                            'Advanced Search</a>');
+                            $('div.dataTables_filter').append('<select id="chooser">'+
+                            '<option value="all" selected=selected>All Cases</option>' +
+                            '<option value="open">Open Cases</option>' +
+                            '<option value="closed">Closed Cases</option>' +
+                            '<option value="urgent">Urgent Cases</option>' +
+                            '<option value="attorney">Need Attorney Cases</option>' +
+                            '<option value="advised">Advised Cases</option>' +
+                            '</select>  <a href="#" id="set_advanced">Advanced Search</a>');
 
                             //Have ColVis and reset buttons pick up the DTTT class
                             $('div.ColVis button').removeClass()
@@ -178,9 +182,19 @@ $(document).ready(function() {
                                         chooserVal = 'closed';
                                         oTable.fnFilter('^.+$', oTable.fnGetColumnIndex('Date Close'), true, false);
                                         break;
+                                    case 'urgent':
+                                        chooserVal = 'urgent';
+                                        oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
+                                        oTable.fnFilter('yes', oTable.fnGetColumnIndex('Urgent situation (per guidelines)'));
+                                        break;
                                     case 'attorney':
-                                        chooserVal = 'attorney callback';
+                                        chooserVal = 'need attorney';
                                         oTable.fnFilter('yes', oTable.fnGetColumnIndex('Ready for attorney callback'));
+                                        oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date of advice call'), true, false);
+                                        break;
+                                    case 'advised':
+                                        chooserVal = 'closed';
+                                        oTable.fnFilter('^.+$', oTable.fnGetColumnIndex('Date of advice call'), true, false);
                                         break;
                                 }
                             });
