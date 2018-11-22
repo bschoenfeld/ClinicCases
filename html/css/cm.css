@@ -284,8 +284,8 @@ td, th {text-align:left;}
 
 div.case_title{float:left;padding:8px 0 0 15px;width:45%;overflow:hidden;white-space:nowrap;text-align:left;}
 div.case_title h2{color:black;font-size:20pt;font-weight:normal;text-shadow: 0 2px 3px gray;}
-div.case_detail_nav{float:left;margin-right:0;margin-top:-2px;padding-bottom:2px;background-color:#FFFFDC;border-left:1px solid  #AAA;border-right:1px solid #AAA;border-bottom:1px solid #AAA;}
-div.case_detail_bar{border-left:1px solid #AAA;border-right:1px solid #AAA;border-bottom:1px solid #AAA}
+div.case_detail_nav{float:left;margin-right:0;margin-top:-1px;padding-bottom:2px;background-color:#FFFFDC;border-left:1px solid  #AAA;border-right:1px solid #AAA;border-bottom:1px solid #AAA;}
+div.case_detail_bar{display:none;border-left:1px solid #AAA;border-right:1px solid #AAA;border-bottom:1px solid #AAA}
 div.case_detail_panel{position:relative;border-right: 1px solid #AAA; border-bottom:1px solid #AAA; border-left: 0 ;float:right;background-color:white;margin-top:0}
 div.case_detail_bar>h3{padding:10px 20px 0 10px;float:left;}
 
@@ -294,7 +294,9 @@ ul.case_detail_nav_list > li{border-bottom:1px solid #FFFFDC;background-color:#F
 ul.case_detail_nav_list > li.selected{border-bottom:1px solid #AAA;border-left:0;border-top:1px solid #AAA;background-color:#FFFFFF;margin-right:-2px;color:black}
 ul.case_detail_nav_list:first-child{border:0}
 ul.case_detail_nav_list > li.selected:before {content: "\0020 \0020 \0020 \00BB \0020";color: green;}
-
+ul.case_detail_nav_list > #item4 {display: none;}
+ul.case_detail_nav_list > #item5 {display: none;}
+ul.case_detail_nav_list > #item7 {display: none;}
 /*
 Width has to be set below in pixels below to accomodate jScrollPane
 */
