@@ -276,6 +276,7 @@ td, th {text-align:left;}
 .ui-tabs{padding:0 !important}
 .ui-helper-reset, .ui-button-text {line-height:0.3 !important}
 .ui-tabs-panel{padding:0 !important}
+.ui-widget{font-family: sans-serif !important;}
 .ui-widget-content{border:0}
 #case_detail_tab_row.ui-widget{border:0;}
 /* This below to fix a bug in jqueryui in Firefox http://stackoverflow.com/questions/6691199/jquery-ui-close-icon-appearing-wrong-in-firefox */
