@@ -19,7 +19,7 @@ function formatCaseData(thisPanel, type) { //Apply CSS
     $('div.case_detail_panel_tools_right').css({'width': '70%'});
 
 
-    thisPanel.find('div.case_data_value').not('div.case_data_name + div.case_data_value').css({'margin-left': '21%'});
+    //thisPanel.find('div.case_data_value').not('div.case_data_name + div.case_data_value').css({'margin-left': '21%'});
 
     //Apply shadow on scroll
     $('.case_detail_panel_casenotes').bind('scroll', function () {
@@ -120,18 +120,18 @@ function formatCaseData(thisPanel, type) { //Apply CSS
         thisPanel.find('select').chosen();
 
         //Align dual input fields with the first ones
-        thisPanel.find('span.dual_input').not('label + span.dual_input').css({'margin-left': '190px'});
+        //thisPanel.find('span.dual_input').not('label + span.dual_input').css({'margin-left': '190px'});
 
         //Align multi-text fields and email fields with the first ones
-        thisPanel.find('span.multi-text').not('label + span.multi-text').css({'margin-left': '190px'});
+        //thisPanel.find('span.multi-text').not('label + span.multi-text').css({'margin-left': '190px'});
 
         //Add link to trigger a new dual field
-        thisPanel.find('p').has('span.dual_input').each(function () {
+        thisPanel.find('.new_case_data_display').has('span.dual_input').each(function () {
             $(this).find('span.dual_input').last().after('<a class="add_another small" href="#">Add another</a>');
         });
 
         //Add link to a new multi-text field
-        thisPanel.find('p').has('span.multi-text').each(function () {
+        thisPanel.find('.new_case_data_display').has('span.multi-text').each(function () {
             $(this).find('span.multi-text').last().after('<a class="add_another small" href="#">Add another</a>');
         });
 
@@ -304,7 +304,7 @@ $('button.case_modify_submit').live('click', function (event) {
         formValsOk.push({'name': 'action', 'value': actionType});
 
         //Extract values from all multi-text fields
-        formVals.find('p').has('.multi-text').each(function () {
+        formVals.find('.new_case_data_display').has('.multi-text').each(function () {
             var dataObj = {};
             var dataName = $(this).find('input').attr('name');
             $(this).find('span.multi-text').each(function () {
@@ -321,7 +321,7 @@ $('button.case_modify_submit').live('click', function (event) {
         });
 
         //Extract values from all dual inputs
-        formVals.find('p').has('.dual_input').each(function () {
+        formVals.find('.new_case_data_display').has('.dual_input').each(function () {
             var dataObj = {};
             var dataName = $(this).find('input:last').attr('name');
             $(this).find('span.dual_input').each(function () {
@@ -418,7 +418,7 @@ $('a.add_another').live('click', function (event) {
     var newField = $(this).prev('span').clone();
     newField.find('input').val('');
     newField.find('select').val('');
-    newField.css({'margin-left': '190px'});
+    //newField.css({'margin-left': '190px'});
 
     //deal with chosen
     newField.find('select').removeClass('chzn-done').css({'display': 'block'}).removeAttr('id').next('div').remove();

@@ -38,10 +38,19 @@
 	<div class="new_case_data">
 
 		<form>
+			
+			<div class="case_data_section">
 
-			<?php foreach ($dta as $d) {extract($d); ?>
+			<?php foreach ($dta as $d) {extract($d);
 
-			<p>
+			if ($section_header != null)
+			{ ?>
+				</div>
+				<div class="new_case_data_section_title"><?php echo $section_header; ?></div>
+				<div class="new_case_data_section">
+			<?php } ?>
+
+			<div class = "<?php echo $db_name; ?>_display new_case_data_display">
 				<label><?php echo htmlspecialchars($display_name,ENT_QUOTES,'UTF-8'); ?></label>
 
 				<?php if ($input_type === 'text'){ ?>
@@ -124,7 +133,7 @@
 
 				<?php } elseif ($input_type === 'select') { ?>
 
-					<select name = "<?php echo $db_name; ?>">
+					<select name = "<?php echo $db_name; ?>" style="width:100%;">
 
 						<option value="" <?php if($type == 'new'){echo "selected=selected";} //identify new users?>> --- </option>
 
@@ -160,7 +169,7 @@
 
 				<?php } ?>
 
-			</p>
+			</div>
 
 			<?php } ?>
 
@@ -173,7 +182,8 @@
 				Submit
 				</button>
 			</p>
-
+		
+			</div>
 		</form>
 
 	</div>
@@ -181,8 +191,15 @@
 <?php } else { ?>
 
 	<div class = "case_data">
+		<div class="case_data_section">
 
 		<?php foreach ($dta as $d) {extract($d);
+			if ($section_header != null)
+			{ ?>
+				</div>
+				<div class="case_data_section_title"><?php echo $section_header; ?></div>
+				<div class="case_data_section">
+			<?php }
 
 			if ($input_type == 'dual') //special handling for dual inputs
 				{ ?>
@@ -199,8 +216,9 @@
 
 							<?php }?>
 
+						<?php } else {?>
+							<div class="case_data_value"></div>
 						<?php }?>
-
 					</div>
 
 			<?php } else { ?>
@@ -235,7 +253,7 @@
 		</div>
 
 			<?php }} ?>
-
+		</div>			
 	</div>
 
 <?php } ?>
