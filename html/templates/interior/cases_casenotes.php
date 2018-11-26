@@ -54,7 +54,7 @@ echo <<<NEWNOTE
 			<div class='csenote_bar'>
 				<div class = 'csenote_bar_left'><img src='$this_thumb'> $this_fname $this_lname</div>
 				<div class = 'csenote_bar_right'>
-				<label>Date:</label> <input type='hidden' name='csenote_date' class='csenote_date_value' value='$this_date'> $selector
+				<label>Date:</label> <input type='hidden' name='csenote_date' class='csenote_date_value' value='$this_date'> <div style="display:none;">$selector</div>
 				<input type='hidden' name='csenote_user' value='$this_user'>
 				<input type='hidden' name='csenote_case_id' value='$this_case_id'>
 				<input type='hidden' name='query_type' value='add'>
@@ -74,7 +74,7 @@ NEWNOTE;
 				$time = convert_case_time($case_notes['time']);
 				echo "<div class='csenote' id='csenote_" . $case_notes['id'] . "'>
 				<div class='csenote_bar'>
-				<div class = 'csenote_bar_left'><img class='thumbnail-mask' src='" . thumbify($case_notes['picture_url']) . "'>&nbsp " . username_to_fullname($dbh,$case_notes['username']). "</div><div class = 'csenote_bar_right'><span class='csenote_date'>" . extract_date($case_notes['date']) .  "</span> &#183; <span class='csenote_time'>" . $time[0] . $time[1] . "</span>";
+				<div class = 'csenote_bar_left'><img class='thumbnail-mask' src='" . thumbify($case_notes['picture_url']) . "'>&nbsp " . username_to_fullname($dbh,$case_notes['username']). "</div><div class = 'csenote_bar_right'><span class='csenote_date'>" . extract_date($case_notes['date']) .  "</span>";
 
 				if ($case_notes['username'] == $_SESSION['login']) {
                     echo "&nbsp;&nbsp;&nbsp; <a href='#' class='csenote_edit'>Edit</a>&nbsp;&nbsp;<a href='#' class='csenote_delete'>Delete</a>";
