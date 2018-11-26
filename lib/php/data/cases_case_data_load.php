@@ -28,6 +28,9 @@ foreach ($columns as $col) {
 	if ($_SESSION['group'] == 'volunteer' && $col['hide_volunteer']) {
 		continue;
 	}
+	if ($_SESSION['group'] != 'admin' && $col['admin_only']) {
+		continue;
+	}
 	//push the value of the field in case_data onto $columns
 	if ($col['db_name'] !== 'assigned_users') {//we don't want assigned users in this view
 		$field =  $col['db_name'];
