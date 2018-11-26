@@ -120,10 +120,10 @@ function formatCaseData(thisPanel, type) { //Apply CSS
         thisPanel.find('select').chosen();
 
         //Align dual input fields with the first ones
-        //thisPanel.find('span.dual_input').not('label + span.dual_input').css({'margin-left': '190px'});
+        thisPanel.find('span.dual_input').css({'display': 'block'});
 
         //Align multi-text fields and email fields with the first ones
-        //thisPanel.find('span.multi-text').not('label + span.multi-text').css({'margin-left': '190px'});
+        thisPanel.find('span.multi-text').css({'display': 'block'});
 
         //Add link to trigger a new dual field
         thisPanel.find('.new_case_data_display').has('span.dual_input').each(function () {
@@ -418,7 +418,7 @@ $('a.add_another').live('click', function (event) {
     var newField = $(this).prev('span').clone();
     newField.find('input').val('');
     newField.find('select').val('');
-    //newField.css({'margin-left': '190px'});
+    newField.css({'display': 'block'});
 
     //deal with chosen
     newField.find('select').removeClass('chzn-done').css({'display': 'block'}).removeAttr('id').next('div').remove();
