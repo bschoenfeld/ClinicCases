@@ -173,7 +173,7 @@
 
 			<?php } ?>
 
-			<p style="text-align:center">
+			<p style="text-align:center;clear:both;">
 				<button class="case_cancel_submit <?php if ($type == 'new') {echo 'cancel_new_case';}?>">
 				Cancel
 				</button>
