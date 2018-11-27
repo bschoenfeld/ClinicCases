@@ -511,15 +511,15 @@ div.cse_msg_new{margin-top:3% !important;}
 div.new_case_data{width:60%;margin:auto;}
 div.new_case_data label {display:block;}
 div.new_case_data_display {margin-bottom:15px;}
-div.new_case_data_section_title{clear: both; color: white;}
-div.new_case_data_section_title ~ div.new_case_data_section_title{margin: 10px -25px; padding: 10px 5px; background-color: rgb(128,128,128); font-weight: bold;}
+div.new_case_data_section_title{clear: both;}
+div.new_case_data_section_title ~ div.new_case_data_section_title{margin: 10px -25px; padding: 10px 5px; font-weight: bold;}
 div.new_case_data input, div.new_case_data select, div.new_case_data textarea {width: 100%;}
 div.new_case_data button.ui-datepicker-trigger {min-width:115px;min-height: 30px;}
 
 div.case_data{width:60%;margin:auto;}
 div.case_data_display{min-height:30px;margin-bottom:20px;border-bottom:1px solid #AAA;}
-div.case_data_section_title{clear: both; color: white;}
-div.case_data_section_title ~ div.case_data_section_title{margin: 10px -25px; padding: 10px 5px; background-color: rgb(128,128,128); font-weight: bold;}
+div.case_data_section_title{clear: both;}
+div.case_data_section_title ~ div.case_data_section_title{margin: 10px -25px; padding: 10px 5px; font-weight: bold;}
 div.case_data_name {font-family:sans-serif;font-size:10pt;color:rgb(128, 128, 128);width:100%;vertical-align:top;}
 div.case_data_value {display:inline-block;vertical-align:top;padding-left:20px;width:100%;min-height:22px;}
 

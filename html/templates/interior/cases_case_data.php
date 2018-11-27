@@ -46,7 +46,7 @@
 			if ($section_header != null)
 			{ ?>
 				</div>
-				<div class="new_case_data_section_title"><?php echo $section_header; ?></div>
+				<div class="new_case_data_section_title" style="background-color:<?php echo htmlspecialchars($section_header_color,ENT_QUOTES,'UTF-8'); ?>"><?php echo $section_header; ?></div>
 				<div class="new_case_data_section">
 			<?php } ?>
 
@@ -197,7 +197,7 @@
 			if ($section_header != null)
 			{ ?>
 				</div>
-				<div class="case_data_section_title"><?php echo $section_header; ?></div>
+				<div class="case_data_section_title" style="background-color:<?php echo htmlspecialchars($section_header_color,ENT_QUOTES,'UTF-8'); ?>"><?php echo $section_header; ?></div>
 				<div class="case_data_section">
 			<?php }
 
