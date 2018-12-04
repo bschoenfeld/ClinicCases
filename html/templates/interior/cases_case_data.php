@@ -133,7 +133,7 @@
 
 				<?php } elseif ($input_type === 'select') { ?>
 
-					<select name = "<?php echo $db_name; ?>">
+					<select name = "<?php echo $db_name; ?>" style="min-width:60px;">
 
 						<option value="" <?php if($type == 'new'){echo "selected=selected";} //identify new users?>> --- </option>
 
