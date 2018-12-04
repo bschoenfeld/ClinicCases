@@ -513,7 +513,6 @@ div.new_case_data label {display:block;}
 div.new_case_data_display {margin-bottom:15px;}
 div.new_case_data_section_title{clear: both;}
 div.new_case_data_section_title ~ div.new_case_data_section_title{margin: 10px -25px; padding: 10px 5px; font-weight: bold;}
-div.new_case_data input, div.new_case_data select, div.new_case_data textarea {width: 100%;}
 div.new_case_data button.ui-datepicker-trigger {min-width:115px;min-height: 30px;}
 
 div.case_data{width:60%;margin:auto;}
@@ -672,4 +671,3 @@ div.board_upload{display: inline-block;}
     width:90%;
     height:90%;
 }
-
