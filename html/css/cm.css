@@ -13,7 +13,7 @@ h4{font-family:sans-serif;font-size:15pt;color:navy;font-weight:normal;}
 h5{font-family:sans-serif;font-size:11pt;text-align:left;color:black;font-weight:normal;font-style:italic;}
 
 
-#menus{position:absolute;right:0%;top:0%;background:rgb(195, 217, 255);text-align:right;font-size:11pt;color:black;font-family:'Crimson Text', garamond, times, serif;}
+#menus{position:absolute;right:0%;top:0%;background:rgb(195, 217, 255);text-align:right;font-size:11pt;color:black;font-family:sans-serif;}
 
 #menus img{margin-top:10px;margin-right:10px;margin-bottom:-5px;}
 
@@ -136,21 +136,21 @@ html>body .print_image{margin-bottom:-10px;margin-right:0;margin-left:10px;}
 
 /* Style for casenotes */.casenotedesc{height:40px;overflow:auto;}
 
-a.nav {font-size:30pt; color:black;font-family:'Crimson Text', garamond, times, serif;text-decoration:none;}
+a.nav {font-size:30pt; color:black;font-family:sans-serif;text-decoration:none;}
 
-a.nav:hover {font-size:30pt;color:green;font-family:'Crimson Text', garamond, times, serif;text-decoration:none;}
+a.nav:hover {font-size:30pt;color:green;font-family:sans-serif;text-decoration:none;}
 
-a.menu {font-size:10pt; color:black;font-family:'Crimson Text', garamond, times, serif;text-decoration:underline;}
+a.menu {font-size:10pt; color:black;font-family:sans-serif;text-decoration:underline;}
 
-a.menu:hover {font-size:10pt;color:red;font-family:'Crimson Text', garamond, times, serif;text-decoration:none;}
+a.menu:hover {font-size:10pt;color:red;font-family:sans-serif;text-decoration:none;}
 
 a.theader {font-weight:bold;color:rgb(228,228,228);text-decoration:underline;}
 
 a.theader:hover {font-weight:bold;color:red;text-decoration:underline;}
 
-a.singlenav{font-size:14pt; color:black;font-family:'Crimson Text', garamond, times, serif;text-decoration:underline;}
+a.singlenav{font-size:14pt; color:black;font-family:sans-serif;text-decoration:underline;}
 
-a.singlenav:hover{font-size:14pt; color:blue;font-family:'Crimson Text', garamond, times, serif;text-decoration:underline;}
+a.singlenav:hover{font-size:14pt; color:blue;font-family:sans-serif;text-decoration:underline;}
 
 a.folder {text-decoration:none;}
 
@@ -672,3 +672,4 @@ div.board_upload{display: inline-block;}
     width:90%;
     height:90%;
 }
+
