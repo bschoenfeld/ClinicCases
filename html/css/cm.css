@@ -156,17 +156,17 @@ a.folder {text-decoration:none;}
 
 a.folder:hover {text-decoration:underline;}
 
-a.small {font-size:10pt; color:black;font-family:'Crimson Text', garamond, times, serif;text-decoration:underline;}
+a.small {font-size:10pt; color:black;font-family:sans-serif;text-decoration:underline;}
 
-a.small:hover {font-size:10pt;color:red;font-family:'Crimson Text', garamond, times, serif;text-decoration:none;}
+a.small:hover {font-size:10pt;color:red;font-family:sans-serif;text-decoration:none;}
 
-a.title {font-size:14pt; color:blue;font-family:'Crimson Text', garamond, times, serif;text-decoration:none;}
+a.title {font-size:14pt; color:blue;font-family:sans-serif;text-decoration:none;}
 
-a.title:hover {font-size:14pt;color:blue;font-family:'Crimson Text', garamond, times, serif;text-decoration:underline;}
+a.title:hover {font-size:14pt;color:blue;font-family:sans-serif;text-decoration:underline;}
 
-a.smallgray {font-size:10pt; color:gray;font-family:'Crimson Text', garamond, times, serif;text-decoration:underline;}
+a.smallgray {font-size:10pt; color:gray;font-family:sans-serif;text-decoration:underline;}
 
-a.smallgray:hover {font-size:10pt;color:red;font-family:'Crimson Text', garamond, times, serif;text-decoration:none;}
+a.smallgray:hover {font-size:10pt;color:red;font-family:sans-serif;text-decoration:none;}
 
 
 #footer {margin-top:5px;text-align:center}
