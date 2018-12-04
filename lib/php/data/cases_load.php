@@ -32,10 +32,10 @@ foreach ($col_result as $val) {
 $col_vals = substr($col_vals_raw,0,-2);
 
 if ($_SESSION['permissions']['view_all_cases'] == "0") {
-    $sql = "SELECT $col_vals, cm_case_assignees.case_id, cm_case_assignees.username FROM cm, cm_case_assignees WHERE cm.id = cm_case_assignees.case_id AND cm_case_assignees.username =  :username AND cm_case_assignees.status =  'active'";
+    $sql = "SELECT $col_vals, cm_case_assignees.case_id, cm_case_assignees.username FROM cm, cm_case_assignees WHERE cm.id = cm_case_assignees.case_id AND cm_case_assignees.username =  :username AND cm_case_assignees.status = 'active' AND cm.first_name <> 'DELETED'";
 } elseif ($_SESSION['permissions']['view_all_cases'] == "1") {
     //admin or super user type query - Users who can access all cases and "work" on all cases.
-    $sql = "SELECT $col_vals FROM cm";
+    $sql = "SELECT $col_vals FROM cm where cm.first_name <> 'DELETED'";
 } else {
     echo "There is configuration error in your groups."; die;
 }
