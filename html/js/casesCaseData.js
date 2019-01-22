@@ -181,6 +181,9 @@ function formatCaseData(thisPanel, type) { //Apply CSS
                 $(this).closest('#case_detail_tab_row').find('div.case_title').html('<h2>' + escapeHtml($(this).val()) + '</h2>');
             }
         });
+
+        thisPanel.find('button.case_modify_submit').button({icons: {primary: 'fff-icon-page-white-get'}, text: true});
+        thisPanel.find('button.case_cancel_submit').button({icons: {primary: 'fff-icon-cross'}, text: true});
     } else {  //display case data
         //format buttons
         thisPanel.find('button.case_data_edit').button({icons: {primary: 'fff-icon-page-edit'}, text: true});
@@ -273,7 +276,7 @@ $('button.case_modify_submit').live('click', function (event) {
     }
 
     $(window).unbind('beforeunload');
-    var formVals = $(this).closest('form');
+    var formVals = resultTarget.find('form');
 
     //enable clinic_id field or else serializeArray won't pick up value
     formVals.find('input[name="clinic_id"]').attr({'disabled': false});
@@ -298,7 +301,8 @@ $('button.case_modify_submit').live('click', function (event) {
         //Reserialize form, taking out dual_inputs and multi-texts.  They are
         //dealt with seperately.
 
-        var formValsOk = $(this).closest('form')
+        var form = resultTarget.find('form');
+        var formValsOk = form
         .find(':not(span.dual_input input, span.dual_input select, span.multi-text input)')
         .serializeArray();
         formValsOk.push({'name': 'action', 'value': actionType});
