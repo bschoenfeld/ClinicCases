@@ -10,6 +10,11 @@ function columns_array($dbh)
 		$get_columns->execute();
 		$result = $get_columns->fetchAll(PDO::FETCH_ASSOC);
 		
+		// Hard code last name col before first name col
+		$tmp = $result[2];
+		$result[2] = $result[3];
+		$result[3] = $tmp;
+		
 		return $result;
 		
 	}	

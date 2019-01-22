@@ -6,6 +6,11 @@ require('../../../db.php');
 	$get_columns->execute();
 	$result = $get_columns->fetchAll();
 
+	// Hard code last name col before first name col
+	$tmp = $result[2];
+	$result[2] = $result[3];
+	$result[3] = $tmp;
+
 	foreach ($result as $col)
 
 		{
