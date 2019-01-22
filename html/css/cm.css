@@ -21,7 +21,7 @@ h5{font-family:sans-serif;font-size:11pt;text-align:left;color:black;font-weight
 
 #notifications{display:none;position:absolute;top:10px;z-index:99;left:50%;margin-left:-150px;width:300px;background-color:white;font-weight:normal;border:1px solid gray;}
 
-#notifications p {font-size:14pt;font-weight:normal;color:red;}
+#notifications p {font-size:13pt;font-weight:normal;color:red;}
 
 #idletimeout { background:#ED1212; border:3px solid #FF6500; color:#fff; font-family:arial, sans-serif; text-align:center; font-size:12px; padding:10px; position:relative; top:0; left:0; right:0; z-index:100000; display:none; }
 
@@ -108,15 +108,15 @@ div.new_account_right p{margin-bottom: 10px;}
 
 .error {background-color:#F7BCC6;color:black}
 
-input{font-family:sans-serif !important;font-size:14pt;color:black;border:1px solid #D8D1D1;}
+input{font-family:sans-serif !important;font-size:13pt !important;color:black;border:1px solid #D8D1D1;}
 
 input.small{font-family:serif !important;font-size:10pt;color:black;}
 
-select.gray{font-family:sans-serif !important;font-size:14pt;color:rgb(224, 224, 224);}
+select.gray{font-family:sans-serif !important;font-size:13pt;color:rgb(224, 224, 224);}
 
-select{font-family:sans-serif !important;font-size:14pt;color:black;}
+select{font-family:sans-serif !important;font-size:13pt;color:black;}
 
-textarea{font-family:sans-serif !important;font-size:14px;font-weight:normal;color:black;border:1px solid #D8D1D1;}
+textarea{width:100%;font-family:sans-serif !important;font-size:13pt !important;font-weight:normal;color:black;border:1px solid #D8D1D1;}
 
 label{font-family:sans-serif !important;font-size:10pt;color:rgb(128, 128, 128);}
 
@@ -124,7 +124,7 @@ label.msg{font-family:sans-serif !important;font-size:10pt;color:rgb(128, 128, 1
 
 .inactive{color:rgb(224, 224, 224); }
 
-button{font-size:14pt;font-family:sans-serif !important;}
+button{font-size:13pt !important;font-family:sans-serif !important;}
 
 .submit_image{margin-bottom:-7px;margin-right:20px;}
 
@@ -148,9 +148,9 @@ a.theader {font-weight:bold;color:rgb(228,228,228);text-decoration:underline;}
 
 a.theader:hover {font-weight:bold;color:red;text-decoration:underline;}
 
-a.singlenav{font-size:14pt; color:black;font-family:sans-serif;text-decoration:underline;}
+a.singlenav{font-size:13pt; color:black;font-family:sans-serif;text-decoration:underline;}
 
-a.singlenav:hover{font-size:14pt; color:blue;font-family:sans-serif;text-decoration:underline;}
+a.singlenav:hover{font-size:13pt; color:blue;font-family:sans-serif;text-decoration:underline;}
 
 a.folder {text-decoration:none;}
 
@@ -160,9 +160,9 @@ a.small {font-size:10pt; color:black;font-family:sans-serif;text-decoration:unde
 
 a.small:hover {font-size:10pt;color:red;font-family:sans-serif;text-decoration:none;}
 
-a.title {font-size:14pt; color:blue;font-family:sans-serif;text-decoration:none;}
+a.title {font-size:13pt; color:blue;font-family:sans-serif;text-decoration:none;}
 
-a.title:hover {font-size:14pt;color:blue;font-family:sans-serif;text-decoration:underline;}
+a.title:hover {font-size:13pt;color:blue;font-family:sans-serif;text-decoration:underline;}
 
 a.smallgray {font-size:10pt; color:gray;font-family:sans-serif;text-decoration:underline;}
 
@@ -248,10 +248,12 @@ a.event_detail_delete {position:absolute;bottom:10px;font-size:.8em;color:red !i
 .ui-timepicker-div td { font-size: 90%; }
 .ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
 
+.ui-datepicker {font-size: 13pt !important;}
+
 /* Cases styles */
 	/* Custom jquery ui buttons */
 
-.DTTT_button_icon { font-size:14pt; padding:3px 10px 3px 5px !important;}
+.DTTT_button_icon { font-size:13pt; padding:3px 10px 3px 5px !important;}
 .ui-icon-inline {display:inline-block !important;}
 .cc_add_icon {display:inline-block !important;}
 
@@ -520,13 +522,13 @@ div.case_data_display{min-height:30px;margin-bottom:20px;border-bottom:1px solid
 div.case_data_section_title{clear: both;}
 div.case_data_section_title ~ div.case_data_section_title{margin: 10px -25px; padding: 10px 5px; font-weight: bold;}
 div.case_data_name {font-family:sans-serif;font-size:10pt;color:rgb(128, 128, 128);width:100%;vertical-align:top;}
-div.case_data_value {display:inline-block;vertical-align:top;padding-left:20px;width:100%;min-height:22px;}
+div.case_data_value {display:inline-block;vertical-align:top;padding-left:20px;width:100%;min-height:22px;font-size:13pt !important;}
 
 div.case_data p {margin-bottom:15px;border-bottom:1px solid #AAA;}
 
 span.dual_input, span.multi-text {display: inline-block;}
 span.dual_input select,span.multi-text select{min-width:80px !important;width:80px;}
-span.dual_input input,span.dual_input input{min-width:170px !important;width:170px;}
+span.dual_input input,span.dual_input input{min-width:170px !important;width:170px;position: relative;top:-7px;}
 
 /* Users page styles */
 div.user_action{text-align: left;margin-left: 10px;}
@@ -575,7 +577,7 @@ div.config_forms input{width:300px;}
 div.config_forms input.cl_code{width:100px;}
 form.config_form{display: none;margin-left: 40px;margin-top: 20px;margin-bottom: 20px}
 div.config_item{text-align:left;}
-div.config_item a{font-size:14pt;}
+div.config_item a{font-size:13pt;}
 div.config_item a.closed{background-image:url('../ico/bullet_toggle_plus.png'); background-position: -1px center;background-repeat: no-repeat;padding-left: 20px}
 div.config_item a.opened{background-image:url('../ico/bullet_toggle_minus.png'); background-position: -1px center;background-repeat: no-repeat;padding-left: 20px}
 
@@ -629,7 +631,7 @@ div.board_new_item_menu{margin-bottom: 10px;}
 div.board_new_item_menu * {vertical-align: top;}
 div.board_new_item_menu label{margin-right: 10px}
 div.board_new_item_menu input{width:300px;}
-div.board_new_item_menu .chzn-container{vertical-align: bottom;font-size: 14pt}
+div.board_new_item_menu .chzn-container{vertical-align: bottom;font-size: 13pt}
 div.board_new_item_menu_bottom{width:100%;position:relative;margin-top: 10px;}
 div.board_new_item_menu_bottom div.qq-upload-button{display: inline-block;}
 div.board_new_item_menu_bottom ul.qq-upload-list{display: inline-block;margin:0px 35px;}
