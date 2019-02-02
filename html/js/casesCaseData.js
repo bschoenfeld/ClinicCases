@@ -182,6 +182,13 @@ function formatCaseData(thisPanel, type) { //Apply CSS
             }
         });
 
+        $('input:[name="number_children"]').keyup(calcPctPovertyLevel);
+        $('input:[name="number_adults"]').keyup(calcPctPovertyLevel);
+        $('input:[name="annual_seniors"]').keyup(calcPctPovertyLevel);
+
+        $('input:[name="monthly_income"]').keyup(calcAnnualIncome);
+        $('input:[name="annual_income"]').keyup(calcMonthlyIncome);
+
         thisPanel.find('button.case_modify_submit').button({icons: {primary: 'fff-icon-page-white-get'}, text: true});
         thisPanel.find('button.case_cancel_submit').button({icons: {primary: 'fff-icon-cross'}, text: true});
     } else {  //display case data
@@ -433,3 +440,48 @@ $('a.add_another').live('click', function (event) {
     newField.find('input').focus();
 
 });
+
+function calcAnnualIncome() {
+    var monthlyIncome = $('input:[name="monthly_income"]').val();
+    $('input:[name="annual_income"]').val(monthlyIncome * 12);
+    calcPctPovertyLevel();
+}
+
+function calcMonthlyIncome() {
+    var annualIncome = $('input:[name="annual_income"]').val();
+    $('input:[name="monthly_income"]').val(Math.floor(annualIncome / 12));
+    calcPctPovertyLevel();
+}
+
+function calcPctPovertyLevel() {
+    var personsToDollars = {
+        1: 12490,
+        2: 16910,
+        3: 21330,
+        4: 25750,
+        5: 30170,
+        6: 34590,
+        7: 39010,
+        8: 43430
+    };
+
+    var additionalDollarsPerPerson = 4420;
+
+    var annualIncome = $('input:[name="annual_income"]').val();
+
+    var persons = 0;
+    persons += parseInt($('input:[name="number_children"]').val());
+    persons += parseInt($('input:[name="number_adults"]').val());
+    persons += parseInt($('input:[name="number_seniors"]').val());
+
+    var povertyLevel = 0;
+    if(persons < 9) {
+        povertyLevel = personsToDollars[persons];
+    } else {
+        povertyLevel = personsToDollars[8];
+        povertyLevel += additionalDollarsPerPerson * (persons - 8);
+    }
+
+    var pct = Math.floor(annualIncome / povertyLevel * 100);
+    $('input:[name="poverty_level"]').val(pct);
+}
