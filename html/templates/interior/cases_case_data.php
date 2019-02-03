@@ -174,7 +174,16 @@
 
 					<textarea name = "<?php echo $db_name; ?>"><?php echo htmlspecialchars($value,ENT_QUOTES,'UTF-8'); ?></textarea>
 
-				<?php } ?>
+				<?php } elseif ($input_type === 'm-textarea'){ ?>
+
+					<?php if (!empty($value)){$items = unserialize($value);
+							foreach ($items as $key => $item) {?>
+
+						<textarea name = "<?php echo $db_name; ?>" class = "<?php echo $db_name; ?>_m-textarea m-textarea"><?php echo htmlspecialchars($item,ENT_QUOTES,'UTF-8'); ?></textarea>
+
+					<?php }}else{ ?>
+						<textarea name = "<?php echo $db_name; ?>" class = "<?php echo $db_name; ?>_m-textarea m-textarea"></textarea>
+				<?php }} ?>
 
 			</div>
 
@@ -241,10 +250,14 @@
 					{
 						$val = null;
 						foreach ($items as $key => $item) {
-							$val .= $key . ", ";
+							if($input_type === 'm-textarea') {
+								$val .= $item . "\n\n";
+							} else {
+								$val .= $key . ", ";
+							}
 						}
 
-						echo htmlspecialchars(substr($val, 0,-2), ENT_QUOTES, 'UTF-8');
+						echo nl2br(htmlspecialchars(substr($val, 0,-2), ENT_QUOTES, 'UTF-8'));
 					}
 					elseif ($input_type === 'date')
 					//then check if it's a date

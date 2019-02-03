@@ -135,6 +135,22 @@ function formatCaseData(thisPanel, type) { //Apply CSS
             $(this).find('span.multi-text').last().after('<a class="add_another small" href="#">Add another</a>');
         });
 
+        //Add link to a new multi-text field
+        thisPanel.find('.new_case_data_display').has('.m-textarea').each(function () {
+            $(this).find('textarea').each(function() {
+                if(!$(this).val()) {
+                    var currentdate = new Date();
+                    var dateStr = "" +
+                        (currentdate.getMonth()+1) + "/" +
+                        currentdate.getDate()      + "/"  +
+                        currentdate.getFullYear();
+                    $(this).attr("data-date", dateStr);
+                    $(this).val(dateStr + "\n");
+                }
+            })
+            $(this).find('textarea').last().after('<a class="add_another small" href="#">Add another</a>');
+        });
+
         //Add datepickers
         thisPanel.find('input.date_field').each(function () {
             var b = $.datepicker.parseDate('yy-mm-dd', $(this).val());
@@ -310,7 +326,7 @@ $('button.case_modify_submit').live('click', function (event) {
 
         var form = resultTarget.find('form');
         var formValsOk = form
-        .find(':not(span.dual_input input, span.dual_input select, span.multi-text input)')
+        .find(':not(span.dual_input input, span.dual_input select, span.multi-text input, .m-textarea)')
         .serializeArray();
         formValsOk.push({'name': 'action', 'value': actionType});
 
@@ -340,6 +356,23 @@ $('button.case_modify_submit').live('click', function (event) {
                 var dataValue = $(this).find('input:last').val();
                 if (dataValue.length > 0) {
                     dataObj[dataValue] = dataType;
+                }
+            });
+
+            if (!$.isEmptyObject(dataObj)) {
+                var dataJson = JSON.stringify(dataObj);
+                formValsOk.push({'name': dataName, 'value': dataJson});
+            }
+        });
+
+        //Extract values from all textarea-multi
+        formVals.find('.new_case_data_display').has('.m-textarea').each(function () {
+            var dataObj = {};
+            var dataName = $(this).find('.m-textarea:last').attr('name');
+            $(this).find('.m-textarea').each(function (i) {
+                var dataValue = $(this).val();
+                if (dataValue.length > 0 && dataValue != $(this).attr('data-date') + "\n") {
+                    dataObj[i] = dataValue;
                 }
             });
 
@@ -426,6 +459,22 @@ $('button.case_data_print').live('click', function () {
 //Add another multi-text or dual
 $('a.add_another').live('click', function (event) {
     event.preventDefault();
+
+    // check for textarea-multi
+    if($(this).prev('textarea').length) {
+        var newTextarea = $(this).prev('textarea').clone();
+        $(this).prev('textarea').after(newTextarea);
+        var currentdate = new Date();
+        var dateStr = "" +
+            (currentdate.getMonth()+1) + "/" +
+            currentdate.getDate()      + "/"  +
+            currentdate.getFullYear();
+        newTextarea.attr("data-date", dateStr);
+        newTextarea.val(dateStr + "\n");
+        newTextarea.focus();
+        return;
+    }
+
     var newField = $(this).prev('span').clone();
     newField.find('input').val('');
     newField.find('select').val('');
