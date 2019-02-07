@@ -160,15 +160,13 @@
 
 					</select>
 
-				<?php } elseif ($input_type === 'select_multiple'){ ?>
+				<?php } elseif ($input_type === 'radio'){ ?>
 
-					<select multiple name = "<?php echo $db_name; ?>">
-
-						<?php foreach ($variable as $key => $value) { ?>
-							# code...
-						<?php } ?>
-
-					</select>
+					<?php 	$s = unserialize($select_options);
+							foreach ($s as $key => $val) { ?>
+								<input type="radio" name="<?php echo $db_name; ?>" value="<?php echo htmlspecialchars($val,ENT_QUOTES,'UTF-8'); ?>" <?php if ($val == $value) {echo 'checked';} ?>>
+								<label style="display:inline"><?php echo htmlspecialchars($val,ENT_QUOTES,'UTF-8'); ?></label>
+					<?php 	} ?>
 
 				<?php } elseif ($input_type === 'textarea'){ ?>
 
