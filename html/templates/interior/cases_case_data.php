@@ -176,12 +176,18 @@
 
 				<?php } elseif ($input_type === 'm-textarea'){ ?>
 
-					<?php if (!empty($value)){$items = unserialize($value);
+					<?php if (!empty($value)){ $items = @unserialize($value);
+						// This is here to support switching from textarea to m-textarea after data already exists in the system
+						if($items === false) {?>
+
+							<textarea name = "<?php echo $db_name; ?>" class = "<?php echo $db_name; ?>_m-textarea m-textarea"><?php echo htmlspecialchars($value,ENT_QUOTES,'UTF-8'); ?></textarea>
+						
+						<?php } else {
 							foreach ($items as $key => $item) {?>
 
-						<textarea name = "<?php echo $db_name; ?>" class = "<?php echo $db_name; ?>_m-textarea m-textarea"><?php echo htmlspecialchars($item,ENT_QUOTES,'UTF-8'); ?></textarea>
+								<textarea name = "<?php echo $db_name; ?>" class = "<?php echo $db_name; ?>_m-textarea m-textarea"><?php echo htmlspecialchars($item,ENT_QUOTES,'UTF-8'); ?></textarea>
 
-					<?php }}else{ ?>
+					<?php }}}else{ ?>
 						<textarea name = "<?php echo $db_name; ?>" class = "<?php echo $db_name; ?>_m-textarea m-textarea"></textarea>
 				<?php }} ?>
 
