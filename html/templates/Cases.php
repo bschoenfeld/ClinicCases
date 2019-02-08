@@ -129,7 +129,7 @@
 						elseif ($col['include_in_case_table'] == "true"  && $col['input_type'] == "dual"):
 							echo "<th><input type=\"text\" name = \"" . $col['db_name'] . "\" class = \"search_init\"></th>";
 
-						elseif ($col['include_in_case_table'] == "true" && $col['input_type'] == "select"):
+						elseif ($col['include_in_case_table'] == "true" && ($col['input_type'] == "select" || $col['input_type'] == "radio")):
 							echo "<th class=\"addSelects\" name =\"" . $col['display_name'] . "\"></th>";
 
 						elseif ($col['include_in_case_table'] == "true" && $col['input_type'] == "select_multiple"):
