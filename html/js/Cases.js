@@ -36,15 +36,12 @@ $(document).ready(function() {
                     'bScrollInfinite': true,
                     'bScrollCollapse': true,
                     'bSortCellsTop': true,
-                    'bStateSave':true,
-                    'iCookieDuration':60*60*24*365,
                     'sScrollY': adjustedHeight - 95,
                     'iDisplayLength': 50,
                     'aaSorting': [[4, 'asc']],
                     'aoColumns': aoColumns,
                     'sDom': 'R<\'H\'fTCi>rt',
                     'oColVis': {
-                        'aiExclude': [0,6,7],
                         'bRestore': true,
                         'buttonText': 'Columns',
                         'fnStateChange': function(iColumn, bVisible) {
@@ -132,6 +129,7 @@ $(document).ready(function() {
                             //Add case status seletctor
                             $('div.dataTables_filter').append('<select id="chooser">'+
                             '<option value="all" selected=selected>All Cases</option>' +
+                            '<option value="intake">Intake</option>' +
                             '<option value="open">Open Cases</option>' +
                             '<option value="closed">Closed Cases</option>' +
                             '<option value="urgent">Urgent Cases</option>' +
@@ -172,7 +170,24 @@ $(document).ready(function() {
                                 fnResetFiltersButNotColumns(false);
 
                                 switch ($(this).val()) {
-                                    case 'all':        
+                                    case 'all':
+                                        $('.ColVis_Restore').trigger( "click" );
+                                        break;
+                                    case 'intake':
+                                        chooserVal = 'intake';
+                                        var colCount = oTable.fnGetData()[0].length;
+                                        var visCols = [
+                                            oTable.fnGetColumnIndex('Last Name'),
+                                            oTable.fnGetColumnIndex('First Name'),
+                                            oTable.fnGetColumnIndex('Date of first call/message to Helpline'),
+                                            oTable.fnGetColumnIndex('Date of 1st intake attempt (unsuccessful)'),
+                                            oTable.fnGetColumnIndex('Date of 2nd intake attempt (unsuccessful)'),
+                                            oTable.fnGetColumnIndex('Tenant will submit documents to Helpline by'),
+                                            oTable.fnGetColumnIndex('Date intake complete')
+                                        ]
+                                        for(var i=0; i<colCount; i++) {
+                                            oTable.fnSetColumnVis( i, visCols.indexOf(i) != -1);
+                                        }
                                         break;
                                     case 'open':
                                         chooserVal = 'open';
@@ -386,14 +401,14 @@ $(document).ready(function() {
 //Filtering for date fields
 $.fn.dataTableExt.afnFiltering.push(
 function(oSettings, aData, iDataIndex) {
-    var opOperator = document.getElementById('open_range').value;
-    var opOperator2 = document.getElementById('open_range_2').value;
-    var clOperator = document.getElementById('close_range').value;
-    var clOperator2 = document.getElementById('close_range_2').value;
-    var opFieldRaw = document.getElementById('date_open').value;
-    var opFieldRaw2 = document.getElementById('date_open_2').value;
-    var clFieldRaw = document.getElementById('date_close').value;
-    var clFieldRaw2 = document.getElementById('date_close_2').value;
+    var opOperator = document.getElementById('open_range') ? document.getElementById('open_range').value : '';
+    var opOperator2 = document.getElementById('open_range_2') ? document.getElementById('open_range_2').value : '';
+    var clOperator = document.getElementById('close_range') ? document.getElementById('close_range').value : '';
+    var clOperator2 = document.getElementById('close_range_2') ? document.getElementById('close_range_2').value : '';
+    var opFieldRaw = document.getElementById('date_open') ? document.getElementById('date_open').value : '';
+    var opFieldRaw2 = document.getElementById('date_open_2') ? document.getElementById('date_open_2').value : '';
+    var clFieldRaw = document.getElementById('date_close') ? document.getElementById('date_close').value : '';
+    var clFieldRaw2 = document.getElementById('date_close_2') ? document.getElementById('date_close_2').value : '';
     var opRowRaw = aData[6];
     var clRowRaw = aData[7];
 
