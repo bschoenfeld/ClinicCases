@@ -129,12 +129,13 @@ $(document).ready(function() {
                             //Add case status seletctor
                             $('div.dataTables_filter').append('<select id="chooser">'+
                             '<option value="all" selected=selected>All Cases</option>' +
-                            '<option value="intake">Intake</option>' +
                             '<option value="open">Open Cases</option>' +
                             '<option value="closed">Closed Cases</option>' +
+                            '<option value="intake">Intake</option>' +
+                            '<option value="advice">Advice</option>' +
                             '<option value="urgent">Urgent Cases</option>' +
-                            '<option value="attorney">Need Attorney Cases</option>' +
-                            '<option value="advised">Advised Cases</option>' +
+                            '<option value="followup">VPLC Follow Up</option>' +
+                            '<option value="review">VPLC Review</option>' +
                             '</select>  <a href="#" id="set_advanced">Advanced Search</a>');
 
                             //Have ColVis and reset buttons pick up the DTTT class
@@ -169,14 +170,56 @@ $(document).ready(function() {
                             $('#chooser').live('change', function(event) {
                                 fnResetFiltersButNotColumns(false);
 
+                                var visCols = [];
                                 switch ($(this).val()) {
                                     case 'all':
-                                        $('.ColVis_Restore').trigger( "click" );
+                                        visCols = [
+                                            oTable.fnGetColumnIndex('Last Name'),
+                                            oTable.fnGetColumnIndex('First Name'),
+                                            oTable.fnGetColumnIndex('Date of first call/message to Helpline'),
+                                            oTable.fnGetColumnIndex('Date intake complete'),
+                                            oTable.fnGetColumnIndex('Tenant will submit documents to Helpline by'),
+                                            oTable.fnGetColumnIndex('Date ready for attorney callback'),
+                                            oTable.fnGetColumnIndex('Date of advice call'),
+                                            oTable.fnGetColumnIndex('Date of follow up call (if any)'),
+                                            oTable.fnGetColumnIndex('Date Close')
+                                        ];
                                         break;
+
+                                    case 'open':
+                                        chooserVal = 'open';
+                                        visCols = [
+                                            oTable.fnGetColumnIndex('Last Name'),
+                                            oTable.fnGetColumnIndex('First Name'),
+                                            oTable.fnGetColumnIndex('Date of first call/message to Helpline'),
+                                            oTable.fnGetColumnIndex('Date intake complete'),
+                                            oTable.fnGetColumnIndex('Tenant will submit documents to Helpline by'),
+                                            oTable.fnGetColumnIndex('Date ready for attorney callback'),
+                                            oTable.fnGetColumnIndex('Date of advice call'),
+                                            oTable.fnGetColumnIndex('Date of follow up call (if any)')
+                                        ];
+
+                                        oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
+                                        break;
+
+                                    case 'closed':
+                                        chooserVal = 'closed';
+                                        visCols = [
+                                            oTable.fnGetColumnIndex('Last Name'),
+                                            oTable.fnGetColumnIndex('First Name'),
+                                            oTable.fnGetColumnIndex('Date of first call/message to Helpline'),
+                                            oTable.fnGetColumnIndex('Date intake complete'),
+                                            oTable.fnGetColumnIndex('Date of advice call'),
+                                            oTable.fnGetColumnIndex('Date of follow up call (if any)'),
+                                            oTable.fnGetColumnIndex('Date Close')
+                                        ];
+
+                                        oTable.fnFilter('^.+$', oTable.fnGetColumnIndex('Date Close'), true, false);
+                                        break;
+
                                     case 'intake':
                                         chooserVal = 'intake';
-                                        var colCount = oTable.fnGetData()[0].length;
-                                        var visCols = [
+                                        visCols = [
                                             oTable.fnGetColumnIndex('Last Name'),
                                             oTable.fnGetColumnIndex('First Name'),
                                             oTable.fnGetColumnIndex('Date of first call/message to Helpline'),
@@ -184,33 +227,82 @@ $(document).ready(function() {
                                             oTable.fnGetColumnIndex('Date of 2nd intake attempt (unsuccessful)'),
                                             oTable.fnGetColumnIndex('Tenant will submit documents to Helpline by'),
                                             oTable.fnGetColumnIndex('Date intake complete')
-                                        ]
-                                        for(var i=0; i<colCount; i++) {
-                                            oTable.fnSetColumnVis( i, visCols.indexOf(i) != -1);
-                                        }
-                                        break;
-                                    case 'open':
-                                        chooserVal = 'open';
+                                        ];
+                                        
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
+                                        oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date of 1st advice attempt (unsuccessful)'), true, false);
+                                        oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date of advice call'), true, false);
+                                        oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date of 3rd intake attempt (unsuccessful)'), true, false);
                                         break;
-                                    case 'closed':
-                                        chooserVal = 'closed';
-                                        oTable.fnFilter('^.+$', oTable.fnGetColumnIndex('Date Close'), true, false);
-                                        break;
-                                    case 'urgent':
-                                        chooserVal = 'urgent';
+
+                                    case 'advice':
+                                        chooserVal = 'advice';
+                                        visCols = [
+                                            oTable.fnGetColumnIndex('Last Name'),
+                                            oTable.fnGetColumnIndex('First Name'),
+                                            oTable.fnGetColumnIndex('Date intake complete'),
+                                            oTable.fnGetColumnIndex('Date ready for attorney callback'),
+                                            oTable.fnGetColumnIndex('Date of 1st advice attempt (unsuccessful)'),
+                                            oTable.fnGetColumnIndex('Date of 2nd advice attempt (unsuccessful)')
+                                        ];
+
+                                        oTable.fnFilter('^.+$', oTable.fnGetColumnIndex('Date ready for attorney callback'), true, false);
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
-                                        oTable.fnFilter('yes', oTable.fnGetColumnIndex('Urgent situation (per guidelines)'));
-                                        break;
-                                    case 'attorney':
-                                        chooserVal = 'need attorney';
-                                        oTable.fnFilter('yes', oTable.fnGetColumnIndex('Ready for attorney callback'));
+                                        oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date of 3rd advice attempt (unsuccessful)'), true, false);
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date of advice call'), true, false);
                                         break;
-                                    case 'advised':
-                                        chooserVal = 'closed';
-                                        oTable.fnFilter('^.+$', oTable.fnGetColumnIndex('Date of advice call'), true, false);
+
+                                    case 'urgent':
+                                        chooserVal = 'urgent';
+                                        visCols = [
+                                            oTable.fnGetColumnIndex('Last Name'),
+                                            oTable.fnGetColumnIndex('First Name'),
+                                            oTable.fnGetColumnIndex('Date of first call/message to Helpline'),
+                                            oTable.fnGetColumnIndex('Date of 1st intake attempt (unsuccessful)'),
+                                            oTable.fnGetColumnIndex('Date of 2nd intake attempt (unsuccessful)'),
+                                            oTable.fnGetColumnIndex('Date intake complete'),
+                                            oTable.fnGetColumnIndex('Date of 1st advice attempt (unsuccessful)'),
+                                            oTable.fnGetColumnIndex('Date of 2nd advice attempt (unsuccessful)')
+                                        ];
+
+                                        oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
+                                        oTable.fnFilter('yes', oTable.fnGetColumnIndex('Urgent situation (per guidelines)'));
+                                        oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date of 3rd advice attempt (unsuccessful)'), true, false);
+                                        oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date of advice call'), true, false);
                                         break;
+
+                                    case 'followup':
+                                        chooserVal = 'followup';
+                                        visCols = [
+                                            oTable.fnGetColumnIndex('Last Name'),
+                                            oTable.fnGetColumnIndex('First Name'),
+                                            oTable.fnGetColumnIndex('Date intake complete'),
+                                            oTable.fnGetColumnIndex('Date of advice call')
+                                        ];
+
+                                        oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
+                                        oTable.fnFilter('yes', oTable.fnGetColumnIndex('Does VPLC need to follow up with this caller?'));
+                                        oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date of follow up call (if any)'), true, false);
+                                        break;
+
+                                    case 'review':
+                                        chooserVal = 'review';
+                                        visCols = [
+                                            oTable.fnGetColumnIndex('Last Name'),
+                                            oTable.fnGetColumnIndex('First Name'),
+                                            oTable.fnGetColumnIndex('Date intake complete'),
+                                            oTable.fnGetColumnIndex('Date of advice call'),
+                                            oTable.fnGetColumnIndex('Date of follow up call (if any)')
+                                        ];
+
+                                        oTable.fnFilter('^.+$', oTable.fnGetColumnIndex('Date Close'), true, false);
+                                        oTable.fnFilter('^$', oTable.fnGetColumnIndex('Review date'), true, false);
+                                        break;
+                                }
+
+                                var colCount = oTable.fnGetData()[0].length;
+                                for(var i=0; i<colCount; i++) {
+                                    oTable.fnSetColumnVis( i, visCols.indexOf(i) != -1);
                                 }
                             });
 
