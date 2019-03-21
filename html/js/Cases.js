@@ -174,29 +174,29 @@ $(document).ready(function() {
                                 switch ($(this).val()) {
                                     case 'all':
                                         visCols = [
-                                            oTable.fnGetColumnIndex('Last Name'),
-                                            oTable.fnGetColumnIndex('First Name'),
-                                            oTable.fnGetColumnIndex('Date of first call/message to Helpline'),
-                                            oTable.fnGetColumnIndex('Date intake complete'),
-                                            oTable.fnGetColumnIndex('Tenant will submit documents to Helpline by'),
-                                            oTable.fnGetColumnIndex('Date ready for attorney callback'),
-                                            oTable.fnGetColumnIndex('Date of advice call'),
-                                            oTable.fnGetColumnIndex('Date of follow up call (if any)'),
-                                            oTable.fnGetColumnIndex('Date Close')
+                                            'Last Name',
+                                            'First Name',
+                                            'Date of first call/message to Helpline',
+                                            'Date intake complete',
+                                            'Tenant will submit documents to Helpline by',
+                                            'Date ready for attorney callback',
+                                            'Date of advice call',
+                                            'Date of follow up call (if any)',
+                                            'Date Close'
                                         ];
                                         break;
 
                                     case 'open':
                                         chooserVal = 'open';
                                         visCols = [
-                                            oTable.fnGetColumnIndex('Last Name'),
-                                            oTable.fnGetColumnIndex('First Name'),
-                                            oTable.fnGetColumnIndex('Date of first call/message to Helpline'),
-                                            oTable.fnGetColumnIndex('Date intake complete'),
-                                            oTable.fnGetColumnIndex('Tenant will submit documents to Helpline by'),
-                                            oTable.fnGetColumnIndex('Date ready for attorney callback'),
-                                            oTable.fnGetColumnIndex('Date of advice call'),
-                                            oTable.fnGetColumnIndex('Date of follow up call (if any)')
+                                            'Last Name',
+                                            'First Name',
+                                            'Date of first call/message to Helpline',
+                                            'Date intake complete',
+                                            'Tenant will submit documents to Helpline by',
+                                            'Date ready for attorney callback',
+                                            'Date of advice call',
+                                            'Date of follow up call (if any)'
                                         ];
 
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
@@ -205,13 +205,13 @@ $(document).ready(function() {
                                     case 'closed':
                                         chooserVal = 'closed';
                                         visCols = [
-                                            oTable.fnGetColumnIndex('Last Name'),
-                                            oTable.fnGetColumnIndex('First Name'),
-                                            oTable.fnGetColumnIndex('Date of first call/message to Helpline'),
-                                            oTable.fnGetColumnIndex('Date intake complete'),
-                                            oTable.fnGetColumnIndex('Date of advice call'),
-                                            oTable.fnGetColumnIndex('Date of follow up call (if any)'),
-                                            oTable.fnGetColumnIndex('Date Close')
+                                            'Last Name',
+                                            'First Name',
+                                            'Date of first call/message to Helpline',
+                                            'Date intake complete',
+                                            'Date of advice call',
+                                            'Date of follow up call (if any)',
+                                            'Date Close'
                                         ];
 
                                         oTable.fnFilter('^.+$', oTable.fnGetColumnIndex('Date Close'), true, false);
@@ -220,13 +220,13 @@ $(document).ready(function() {
                                     case 'intake':
                                         chooserVal = 'intake';
                                         visCols = [
-                                            oTable.fnGetColumnIndex('Last Name'),
-                                            oTable.fnGetColumnIndex('First Name'),
-                                            oTable.fnGetColumnIndex('Date of first call/message to Helpline'),
-                                            oTable.fnGetColumnIndex('Date of 1st intake attempt (unsuccessful)'),
-                                            oTable.fnGetColumnIndex('Date of 2nd intake attempt (unsuccessful)'),
-                                            oTable.fnGetColumnIndex('Tenant will submit documents to Helpline by'),
-                                            oTable.fnGetColumnIndex('Date intake complete')
+                                            'Last Name',
+                                            'First Name',
+                                            'Date of first call/message to Helpline',
+                                            'Date of 1st intake attempt (unsuccessful)',
+                                            'Date of 2nd intake attempt (unsuccessful)',
+                                            'Date intake complete',
+                                            'Tenant will submit documents to Helpline by'
                                         ];
                                         
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
@@ -238,12 +238,12 @@ $(document).ready(function() {
                                     case 'advice':
                                         chooserVal = 'advice';
                                         visCols = [
-                                            oTable.fnGetColumnIndex('Last Name'),
-                                            oTable.fnGetColumnIndex('First Name'),
-                                            oTable.fnGetColumnIndex('Date intake complete'),
-                                            oTable.fnGetColumnIndex('Date ready for attorney callback'),
-                                            oTable.fnGetColumnIndex('Date of 1st advice attempt (unsuccessful)'),
-                                            oTable.fnGetColumnIndex('Date of 2nd advice attempt (unsuccessful)')
+                                            'Last Name',
+                                            'First Name',
+                                            'Date intake complete',
+                                            'Date ready for attorney callback',
+                                            'Date of 1st advice attempt (unsuccessful)',
+                                            'Date of 2nd advice attempt (unsuccessful)'
                                         ];
 
                                         oTable.fnFilter('^.+$', oTable.fnGetColumnIndex('Date ready for attorney callback'), true, false);
@@ -255,14 +255,14 @@ $(document).ready(function() {
                                     case 'urgent':
                                         chooserVal = 'urgent';
                                         visCols = [
-                                            oTable.fnGetColumnIndex('Last Name'),
-                                            oTable.fnGetColumnIndex('First Name'),
-                                            oTable.fnGetColumnIndex('Date of first call/message to Helpline'),
-                                            oTable.fnGetColumnIndex('Date of 1st intake attempt (unsuccessful)'),
-                                            oTable.fnGetColumnIndex('Date of 2nd intake attempt (unsuccessful)'),
-                                            oTable.fnGetColumnIndex('Date intake complete'),
-                                            oTable.fnGetColumnIndex('Date of 1st advice attempt (unsuccessful)'),
-                                            oTable.fnGetColumnIndex('Date of 2nd advice attempt (unsuccessful)')
+                                            'Last Name',
+                                            'First Name',
+                                            'Date of first call/message to Helpline',
+                                            'Date of 1st intake attempt (unsuccessful)',
+                                            'Date of 2nd intake attempt (unsuccessful)',
+                                            'Date intake complete',
+                                            'Date of 1st advice attempt (unsuccessful)',
+                                            'Date of 2nd advice attempt (unsuccessful)'
                                         ];
 
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
@@ -274,10 +274,10 @@ $(document).ready(function() {
                                     case 'followup':
                                         chooserVal = 'followup';
                                         visCols = [
-                                            oTable.fnGetColumnIndex('Last Name'),
-                                            oTable.fnGetColumnIndex('First Name'),
-                                            oTable.fnGetColumnIndex('Date intake complete'),
-                                            oTable.fnGetColumnIndex('Date of advice call')
+                                            'Last Name',
+                                            'First Name',
+                                            'Date intake complete',
+                                            'Date of advice call'
                                         ];
 
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
@@ -288,11 +288,11 @@ $(document).ready(function() {
                                     case 'review':
                                         chooserVal = 'review';
                                         visCols = [
-                                            oTable.fnGetColumnIndex('Last Name'),
-                                            oTable.fnGetColumnIndex('First Name'),
-                                            oTable.fnGetColumnIndex('Date intake complete'),
-                                            oTable.fnGetColumnIndex('Date of advice call'),
-                                            oTable.fnGetColumnIndex('Date of follow up call (if any)')
+                                            'Last Name',
+                                            'First Name',
+                                            'Date intake complete',
+                                            'Date of advice call',
+                                            'Date of follow up call (if any)'
                                         ];
 
                                         oTable.fnFilter('^.+$', oTable.fnGetColumnIndex('Date Close'), true, false);
@@ -300,9 +300,14 @@ $(document).ready(function() {
                                         break;
                                 }
 
+                                // Reorder columns
+                                for(var i=0; i<visCols.length; i++) {
+                                    oTable.fnColReorder(oTable.fnGetColumnIndex(visCols[i]), i);
+                                }
+
                                 var colCount = oTable.fnGetData()[0].length;
                                 for(var i=0; i<colCount; i++) {
-                                    oTable.fnSetColumnVis( i, visCols.indexOf(i) != -1);
+                                    oTable.fnSetColumnVis( i, i < visCols.length);
                                 }
                             });
 
