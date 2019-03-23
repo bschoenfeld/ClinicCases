@@ -405,7 +405,7 @@ $(document).ready(function() {
                             $('#table_cases tbody').click(function(event) {
                                 var iPos = oTable.fnGetPosition(event.target.parentNode);
                                 var aData = oTable.fnGetData(iPos);
-                                var iId = aData[0];
+                                var iId = aData[oTable.fnGetColumnIndex('Id')];
                                 callCaseWindow(iId);
 
                             });

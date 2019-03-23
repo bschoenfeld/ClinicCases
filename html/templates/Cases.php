@@ -150,7 +150,7 @@
 									<option value=\"less\">&lt;</option>
 								</select>
 
-								<input type=\"text\" name = \"" . $col['db_name'] . "\" id=\"" . $col['db_name'] . "\" class=\"search_init\" title=\"Select a Date\" column = \"" . $col['db_name'] . "\"><br />
+								<input type=\"text\" name = \"" . $col['display_name'] . "\" id=\"" . $col['db_name'] . "\" class=\"search_init\" title=\"Select a Date\" column = \"" . $col['db_name'] . "\"><br />
 
 								<a href=\"#\" id=\"add" . $date_type . "Row\" class=\"smallgray\">Add Condition</a>
 
