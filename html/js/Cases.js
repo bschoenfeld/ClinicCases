@@ -171,6 +171,7 @@ $(document).ready(function() {
                                 fnResetFiltersButNotColumns(false);
 
                                 var visCols = [];
+                                var sortCol = null;
                                 switch ($(this).val()) {
                                     case 'all':
                                         visCols = [
@@ -184,6 +185,7 @@ $(document).ready(function() {
                                             'Date of follow up call (if any)',
                                             'Date Close'
                                         ];
+                                        sortCol = 'Date of first call/message to Helpline';
                                         break;
 
                                     case 'open':
@@ -198,7 +200,7 @@ $(document).ready(function() {
                                             'Date of advice call',
                                             'Date of follow up call (if any)'
                                         ];
-
+                                        sortCol = 'Date intake complete';
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
                                         break;
 
@@ -213,7 +215,7 @@ $(document).ready(function() {
                                             'Date of follow up call (if any)',
                                             'Date Close'
                                         ];
-
+                                        sortCol = 'Date Close';
                                         oTable.fnFilter('^.+$', oTable.fnGetColumnIndex('Date Close'), true, false);
                                         break;
 
@@ -228,7 +230,7 @@ $(document).ready(function() {
                                             'Date intake complete',
                                             'Tenant will submit documents to Helpline by'
                                         ];
-                                        
+                                        sortCol = 'Date of first call/message to Helpline';
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date of 1st advice attempt (unsuccessful)'), true, false);
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date of advice call'), true, false);
@@ -245,7 +247,7 @@ $(document).ready(function() {
                                             'Date of 1st advice attempt (unsuccessful)',
                                             'Date of 2nd advice attempt (unsuccessful)'
                                         ];
-
+                                        sortCol = 'Date ready for attorney callback';
                                         oTable.fnFilter('^.+$', oTable.fnGetColumnIndex('Date ready for attorney callback'), true, false);
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date of 3rd advice attempt (unsuccessful)'), true, false);
@@ -264,7 +266,7 @@ $(document).ready(function() {
                                             'Date of 1st advice attempt (unsuccessful)',
                                             'Date of 2nd advice attempt (unsuccessful)'
                                         ];
-
+                                        sortCol = 'Date of first call/message to Helpline';
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
                                         oTable.fnFilter('yes', oTable.fnGetColumnIndex('Urgent situation (per guidelines)'));
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date of 3rd advice attempt (unsuccessful)'), true, false);
@@ -279,7 +281,7 @@ $(document).ready(function() {
                                             'Date intake complete',
                                             'Date of advice call'
                                         ];
-
+                                        sortCol = 'Date of advice call';
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date Close'), true, false);
                                         oTable.fnFilter('yes', oTable.fnGetColumnIndex('Does VPLC need to follow up with this caller?'));
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date of follow up call (if any)'), true, false);
@@ -294,7 +296,7 @@ $(document).ready(function() {
                                             'Date of advice call',
                                             'Date of follow up call (if any)'
                                         ];
-
+                                        sortCol = 'Date of advice call';
                                         oTable.fnFilter('^.+$', oTable.fnGetColumnIndex('Date Close'), true, false);
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Review date'), true, false);
                                         break;
@@ -309,6 +311,10 @@ $(document).ready(function() {
                                 for(var i=0; i<colCount; i++) {
                                     oTable.fnSetColumnVis( i, i < visCols.length);
                                 }
+
+                                // Sort rows
+                                if(sortCol)
+                                    oTable.fnSort( [ [oTable.fnGetColumnIndex(sortCol), 'desc'] ] );
                             });
 
                             //Set css for advanced date function; make room for the operator selects
@@ -425,6 +431,16 @@ $(document).ready(function() {
                             });
 
                             $('#processing').hide(); //hide the "loading" div after load.
+                            
+                            // Select default view
+                            var defaultView = 'all';
+                            if (window.clinicCasesUserGroup == 'volunteer') {
+                                defaultView = 'intake';
+                            } else if (window.clinicCasesUserGroup == 'volunteer_attorney') {
+                                defaultView = 'advice';
+                            }
+                                
+                            $('#chooser option[value=' + defaultView + ']').attr('selected', 'selected').trigger('change');
 
                         },
                         'oLanguage': {

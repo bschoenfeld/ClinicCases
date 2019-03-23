@@ -19,8 +19,6 @@
 
 <link rel="stylesheet" type="text/css" href="lib/javascripts/timepicker/jquery-ui-timepicker-addon.css" />
 
-
-
 <!-- Js Calls Specific to this page -->
 	<script src="lib/DataTables-1.8.2/media/js/jquery.dataTables.js" type="text/javascript"></script>
 
@@ -69,6 +67,10 @@
 	<script type="text/javascript" src="lib/javascripts/jquery.highlight-3.js"></script>
 
 	<script type="text/javascript" src="lib/javascripts/dataTablesFunctions.js"></script>
+
+	<script>
+		window.clinicCasesUserGroup = "<?php echo $_SESSION['group']; ?>";
+	</script>
 
 </head>
 <body>
