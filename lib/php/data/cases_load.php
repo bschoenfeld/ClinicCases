@@ -23,11 +23,6 @@ $get_columns = $dbh->prepare('SELECT * from cm_columns');
 $get_columns->execute();
 $col_result = $get_columns->fetchAll();
 
-// Hard code last name col before first name col
-$tmp = $col_result[2];
-$col_result[2] = $col_result[3];
-$col_result[3] = $tmp;
-
 foreach ($col_result as $val) {
     if ($val[3] == "true")
         {@$col_vals_raw .= "cm." . $val[1] . ", ";}
