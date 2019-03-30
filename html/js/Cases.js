@@ -514,6 +514,34 @@ $(document).ready(function() {
 //Filtering for date fields
 $.fn.dataTableExt.afnFiltering.push(
 function(oSettings, aData, iDataIndex) {
+    if ($('#chooser').val() == 'advice') {
+        var dateReadyForAdvice = aData[oTable.fnGetColumnIndex('Date ready for attorney callback')];
+        if (!dateReadyForAdvice) return true;
+
+        var today = new Date();
+        today.setHours(0,0,0,0);
+        return new Date(dateReadyForAdvice) <= today;
+    }
+
+    if ($('#chooser').val() == 'intake') {
+        // Show all cases where intake is not complete
+        var intakeComplete = aData[oTable.fnGetColumnIndex('Date intake complete')];
+        if (!intakeComplete) return true;
+
+        // Intake is complete, so look at document date
+        var documentDate = aData[oTable.fnGetColumnIndex('Tenant will submit documents to Helpline by')];
+
+        // If there is no document date, don't show it
+        if(!documentDate) return false;
+
+        // Show if expecting documents in the next four days
+        var fourDaysFromNow = new Date();
+        fourDaysFromNow.setDate(fourDaysFromNow.getDate() + 4);
+        fourDaysFromNow.setHours(0,0,0,0);
+        return new Date(documentDate) < fourDaysFromNow;
+    }
+
+
     var opOperator = document.getElementById('open_range') ? document.getElementById('open_range').value : '';
     var opOperator2 = document.getElementById('open_range_2') ? document.getElementById('open_range_2').value : '';
     var clOperator = document.getElementById('close_range') ? document.getElementById('close_range').value : '';
