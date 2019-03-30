@@ -400,7 +400,10 @@ $('button.case_modify_submit').live('click', function (event) {
                 });
 
                 //Refresh the table; see Cases.js
-                oTable.fnReloadAjax();
+                ColReorder.fnReset(oTable);
+                oTable.fnReloadAjax(null, function() {
+                    $('#chooser').change();
+                });
                 //Notify of conflicts; see casesCaseDetail.js
                 checkConflicts(thisCaseId);
             }
