@@ -304,7 +304,11 @@ $(document).ready(function() {
 
                                 // Reorder columns
                                 for(var i=0; i<visCols.length; i++) {
-                                    oTable.fnColReorder(oTable.fnGetColumnIndex(visCols[i]), i);
+                                    var columnIndex = oTable.fnGetColumnIndex(visCols[i]);
+                                    if(columnIndex < 0) {
+                                        console.log('Missing col ' + visCols[i]);
+                                    }
+                                    oTable.fnColReorder(columnIndex, i);
                                 }
 
                                 var colCount = oTable.fnGetData()[0].length;
