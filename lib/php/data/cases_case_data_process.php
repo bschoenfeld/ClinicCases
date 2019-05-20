@@ -24,6 +24,10 @@ function bindPostVals($query_string,$open_close)
 	//Time opened and closed is not presented to user.  So, we add the values.
 	$now =  date('Y-m-d H:i:s');
 
+	// Set last modified
+	$cols .= "`time_modified` = :time_modified,";
+	$values[':time_modified'] = $now;
+
 	if ($open_close === 'open')
 		{
 			$cols .= "`time_opened` = :time_opened";
