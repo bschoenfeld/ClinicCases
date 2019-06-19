@@ -6,6 +6,10 @@ require('../../../db.php');
 require('../utilities/names.php');
 require('../utilities/convert_times.php');
 
+include('../airtable/Airtable.php');
+include('../airtable/Request.php');
+include('../airtable/Response.php');
+
 //function to sort the activities array by subkey - date
 
 function sortBySubkey(&$array, $subkey, $sortType = SORT_DESC) {
@@ -36,7 +40,7 @@ else
 
 //1.
 //Get this client's name
-$q = $dbh->prepare("SELECT first_name,middle_name,last_name FROM cm WHERE id = ?");
+$q = $dbh->prepare("SELECT case_id,first_name,middle_name,last_name FROM cm WHERE id = ?");
 
 $q->bindParam(1,$id);
 
@@ -212,6 +216,36 @@ if ($contact_number >0)
 	}
 }
 
+use \TANIOS\Airtable\Airtable;
+$airtable = new Airtable(array(
+    'api_key' => 'XXX',
+    'base'    => 'XXX'
+));
+$request = $airtable->getContent( 'Clients' );
+
+$new_client_name = $new_client['first_name'] . ' ' . $new_client['last_name'];
+
+do {
+    $response = $request->getResponse();
+    foreach($response['records'] as $record) {
+		$curName = $record->fields->DisplayName;
+		$caseId = $record->fields->EvictionHelplineCaseId;
+
+		if($caseId == $new_client['case_id'])
+		{
+			continue;
+		}
+
+		similar_text($new_client_name, $curName, $per);
+
+		if ($per >= 80)
+		{
+			$conflicts[] = array('percentage' => $per,  'text' => 'AirTable id ' . $record->fields->id . ' - ' .  $curName . " ("  .  round($per,2) . " % match)");
+		}
+	}
+}
+while( $request = $response->next() );
+
 //Return the data
 $count = count($conflicts);
 
@@ -219,7 +253,7 @@ if ($type === 'alert')
 {
 	if ($count > 0)
 	{
-		$return = array('conflicts' => true,'number' => $count);
+		$return = array('conflicts' => true, 'number' => $count, 'details' => $conflicts);
 		echo json_encode($return);
 	}
 	else

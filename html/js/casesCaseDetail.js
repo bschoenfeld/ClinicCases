@@ -94,7 +94,7 @@ function addDetailTabs(id,newCase) {
                         $(panelTarget).find('.case_detail_nav li#item2').trigger('click');
                         
                         //Notify of conflicts
-                        checkConflicts(id);
+                        //checkConflicts(id);
                     }
                     
                     $('.assigned_people').jScrollPane({autoReinitialise:true});
@@ -253,14 +253,24 @@ function tabCheckDirty(el) {
 
 //Check for conflicts
 function checkConflicts(caseId) {
+    $('.initial_conflicts_checked_display button').html('Checking');
+    $('.initial_conflicts_checked_display button').attr("disabled", "disabled");
+
     $.post('lib/php/data/cases_conflicts_load.php',{
         'case_id':caseId,
         'type':'alert'
     },function(data){
+        $('.initial_conflicts_checked_display button').html('Check');
+        $('.initial_conflicts_checked_display button').attr("disabled", null);
+
         var serverResponse = $.parseJSON(data);
         if (serverResponse.conflicts === true) {
-            $(panelTarget).find('span.conflicts_number')
-            .html('<span class="msg_number"> (' + serverResponse.number + ')</span>');
+            //$(panelTarget).find('span.conflicts_number')
+            //.html('<span class="msg_number"> (' + serverResponse.number + ')</span>');
+            console.log(serverResponse);
+            alert("Conflicts found!");
+        } else {
+            alert("No conflicts found");
         }
     });
 }

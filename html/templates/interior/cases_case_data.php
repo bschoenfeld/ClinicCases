@@ -58,6 +58,7 @@
 			<?php } ?>
 
 			<div class = "<?php echo $db_name; ?>_display new_case_data_display">
+				
 				<label><?php echo htmlspecialchars($display_name,ENT_QUOTES,'UTF-8'); ?></label>
 
 				<?php if ($input_type === 'text'){ ?>
@@ -244,6 +245,11 @@
 			<?php } else { ?>
 
 		<div class = "<?php echo $db_name;?>_display case_data_display">
+
+				<?php if ($db_name === 'initial_conflicts_checked'){ ?>
+					<button style="float:right" onclick="checkConflicts('<?php echo $case_id;?>')">Check</button>
+				<?php } ?>
+
 				<div class = "case_data_name"><?php echo htmlspecialchars($display_name,ENT_QUOTES,'UTF-8'); ?></div>
 
 				<div class="case_data_value">
