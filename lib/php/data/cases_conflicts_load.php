@@ -30,200 +30,58 @@ if (isset($_POST['type']))
 else
 {$type='display';}
 
-//what kind of data are we going to check?
-//1. New client name against previous adverse parties
-//2. New adverse parties against all previous client names
-//3. This cases's contacts against all previous client names
-//4. This case's contacts against all previous adverse parties
-//Script must be run 1) on case load 2) when new contact is entered,
-//and 3) when case data is edited
-
-//1.
-//Get this client's name
-$q = $dbh->prepare("SELECT case_id,first_name,middle_name,last_name FROM cm WHERE id = ?");
-
+$q = $dbh->prepare("SELECT * FROM cm WHERE id = ?");
 $q->bindParam(1,$id);
-
 $q->execute();
 
-$new_client = $q->fetch(PDO::FETCH_ASSOC);
+$case = $q->fetch(PDO::FETCH_ASSOC);
 
-$new_client_name = $new_client['first_name'] . ' ' . $new_client['middle_name'] . ' ' . $new_client['last_name'];
+$parties = array();
+$parties[] = array(
+	'name' => $case['first_name'] . ' ' . $case['last_name'], 
+	'role' => 'Tenant', 
+	'matches' => array());
 
-//Get all adverse parties
-$q = $dbh->prepare("SELECT * FROM cm_adverse_parties");
+$parties[] = array(
+	'name' => $case['landlord_first_name'] . ' ' . $case['landlord_last_name'], 
+	'role' => 'Landlord', 
+	'matches' => array());
 
-$q->execute();
+$parties[] = array(
+	'name' => $case['property_manager_first_name'] . ' ' . $case['property_manager_last_name'], 
+	'role' => 'Property Manager', 
+	'matches' => array());
 
-$adverse = $q->fetchAll(PDO::FETCH_ASSOC);
+$parties[] = array(
+	'name' => $case['other_party_a_first_name'] . ' ' . $case['other_party_a_last_name'], 
+	'role' => 'Other Party A', 
+	'matches' => array());
 
-$conflicts = array();
+$parties[] = array(
+	'name' => $case['other_party_b_first_name'] . ' ' . $case['other_party_b_last_name'], 
+	'role' => 'Other Party B', 
+	'matches' => array());
 
-foreach ($adverse as $ad) {
+$parties[] = array(
+	'name' => $case['other_party_c_first_name'] . ' ' . $case['other_party_c_last_name'], 
+	'role' => 'Other Party C', 
+	'matches' => array());
 
-	similar_text($new_client_name, $ad['name'], $per);
-
-	if ($per >= 80)
-	{
-		$conflicts[] = array('percentage' => $per,'text' => "A party named <strong> " . htmlspecialchars($ad['name'], ENT_QUOTES,'UTF-8') . " </strong> was adverse in the <a href='index.php?i=Cases.php#cases/" . $ad['case_id'] . "' target='_new'>" .
-		case_id_to_casename ($dbh,$ad['case_id']) . "</a> case.  ("  .  round($per,2) . " % match)");
-	}
-
-}
-
-//2.
-//Get this cases's adverse parties
-$q = $dbh->prepare("SELECT * FROM cm_adverse_parties WHERE case_id = ?");
-
-$q->bindParam(1,$id);
-
-$q->execute();
-
-$this_adverse_parties = $q->fetchAll();
-
-if ($q->rowCount() > 0)
-{
-
-	//Get all client names and put in an array
-	$q = $dbh->prepare("SELECT id,first_name,middle_name,last_name FROM cm");
-
-	$q->execute();
-
-	$clients = $q->fetchAll(PDO::FETCH_ASSOC);
-
-	$acs = array();
-
-	foreach ($clients as $client) {
-
-	$acs[] = array('case_id' => $client['id'],'name' => $client['first_name'] . ' ' .
-	$client['middle_name'] . ' ' . $client['last_name']);
-
-	}
-
-	//Now do the name comparison
-	foreach ($this_adverse_parties as $ap) {
-
-		foreach ($acs as $ac) {
-
-			similar_text($ap['name'], $ac['name'], $per);
-
-			if ($per >= 80)
-			{
-				$conflicts[] = array('percentage' => $per,'text' =>
-				"We represented a party named <strong>" . htmlspecialchars($ap['name'], ENT_QUOTES,'UTF-8') . " </strong> in the <a href='index.php?i=Cases.php#cases/"
-				. $ac['case_id'] . "' target='_new'>" .
-				case_id_to_casename ($dbh,$ac['case_id']) . "</a> case. " . htmlspecialchars($ap['name'], ENT_QUOTES,'UTF-8') . " is adverse in this case. ("  .
-				round($per,2) . " % match)");
-			}
-
-		}
-	}
-}
-
-//3.
-//Get this cases's contacts
-$q = $dbh->prepare("SELECT * FROM cm_contacts WHERE assoc_case = ?");
-
-$q->bindParam(1,$id);
-
-$q->execute();
-
-$contacts = $q->fetchAll(PDO::FETCH_ASSOC);
-
-$contact_number = $q->rowCount();
-
-if ($contact_number > 0)
-{
-	//Get all client names and put in an array
-	$q = $dbh->prepare("SELECT id,first_name,middle_name,last_name FROM cm");
-
-	$q->execute();
-
-	$clients = $q->fetchAll(PDO::FETCH_ASSOC);
-
-	$acs = array();
-
-	foreach ($clients as $client) {
-
-	$acs[] = array('case_id' => $client['id'],'name' => $client['first_name'] . ' ' .
-	$client['middle_name'] . ' ' . $client['last_name']);
-
-	}
-
-	//Now do the name comparison
-	foreach ($contacts as $contact) {
-
-		foreach ($acs as $ac) {
-
-			$contact_name = $contact['first_name'] . ' ' . $contact['last_name'];
-
-			if (!$contact['type'])
-			{
-				$contact_type = "contact";
-			}
-			else
-			{
-				$contact_type = $contact['type'];
-			}
-
-			similar_text($contact_name, $ac['name'], $per);
-
-			if ($per >= 80)
-			{
-				$conflicts[] = array('percentage' => $per,'text' =>
-				"We represented a party named <strong>" . htmlspecialchars($contact_name ,ENT_QUOTES,'UTF-8'). "</strong> in the <a href='index.php?i=Cases.php#cases/"
-				. $ac['case_id'] . "' target='_new'>" .
-				case_id_to_casename ($dbh,$ac['case_id']) . "</a> case." .  htmlspecialchars($contact_name ,ENT_QUOTES,'UTF-8'). " is a
-				$contact_type in this case. ("  . round($per,2) . " % match)");
-			}
-
-		}
-	}
-}
-
-//4.
-//use the previously generated contacts
-if ($contact_number >0)
-{
-	$q = $dbh->prepare("SELECT * FROM cm_adverse_parties");
-
-	$q->execute();
-
-	$adverse = $q->fetchAll(PDO::FETCH_ASSOC);
-
-	foreach ($adverse as $ad) {
-
-		$contact_name = $contact['first_name'] . ' ' . $contact['last_name'];
-
-		if (!$contact['type'])
-			{
-				$contact_type = "contact";
-			}
-			else
-			{
-				$contact_type = $contact['type'];
-			}
-
-		similar_text($contact_name, $ad['name'], $per);
-
-		if ($per >= 80)
-		{
-			$conflicts[] = array('percentage' => $per,'text' => "A party named <strong> " . htmlspecialchars($ad['name'], ENT_QUOTES,'UTF-8') . " </strong> was adverse in the <a href='index.php?i=Cases.php#cases/" . $ad['case_id'] . "' target='_new'>" .
-			case_id_to_casename ($dbh,$ad['case_id']) . "</a> case. " .  htmlspecialchars($contact_name ,ENT_QUOTES,'UTF-8'). " is a " . 
-			htmlspecialchars($contact_type ,ENT_QUOTES,'UTF-8') . " in this case. ("  .  round($per,2) . " % match)");
-		}
-
-	}
-}
+$parties[] = array(
+	'name' => $case['third_party_caller_first_name'] . ' ' . $case['third_party_caller_last_name'], 
+	'role' => 'Third Party Caller', 
+	'matches' => array());
 
 use \TANIOS\Airtable\Airtable;
 $airtable = new Airtable(array(
-    'api_key' => 'XXX',
-    'base'    => 'XXX'
+    'api_key' => CC_AIRTABLE_KEY,
+    'base'    => CC_AIRTABLE_BASE
 ));
-$request = $airtable->getContent( 'Clients' );
+$request = $airtable->getContent('Clients');
 
-$new_client_name = $new_client['first_name'] . ' ' . $new_client['last_name'];
+$namesChecked = 0;
+$namesSkipped = 0;
+$conflictCount = 0;
 
 do {
     $response = $request->getResponse();
@@ -231,43 +89,33 @@ do {
 		$curName = $record->fields->DisplayName;
 		$caseId = $record->fields->EvictionHelplineCaseId;
 
-		if($caseId == $new_client['case_id'])
-		{
+		if($caseId == $case['clinic_id']) {
+			$namesSkipped += 1;
 			continue;
 		}
 
-		similar_text($new_client_name, $curName, $per);
+		$namesChecked += 1;
 
-		if ($per >= 80)
-		{
-			$conflicts[] = array('percentage' => $per,  'text' => 'AirTable id ' . $record->fields->id . ' - ' .  $curName . " ("  .  round($per,2) . " % match)");
+		foreach ($parties as &$party) {
+			if (ctype_space($party['name'])) {
+				continue;
+			}
+			similar_text($party['name'], $curName, $per);
+			if ($per >= 80) {
+				$conflictCount += 1;
+				$party['matches'][] = array(
+					'percentage' => $per, 
+					'name' => $curName,
+					'airtableId' => $record->fields->id);
+			}
 		}
 	}
 }
 while( $request = $response->next() );
 
-//Return the data
-$count = count($conflicts);
-
-if ($type === 'alert')
-{
-	if ($count > 0)
-	{
-		$return = array('conflicts' => true, 'number' => $count, 'details' => $conflicts);
-		echo json_encode($return);
-	}
-	else
-	{
-		$return = array('conflicts' => false);
-		echo json_encode($return);
-	}
-}
-else
-{
-	if ($count > 0)
-	{
-		sortBySubkey($conflicts,'percentage');
-	}
-
-	include('../../../html/templates/interior/cases_conflicts.php');
-}
+$return = array(
+	'conflicts' => $conflictCount, 
+	'namesChecked' => $namesChecked,
+	'namesSkipped' => $namesSkipped,
+	'parties' => $parties);
+echo json_encode($return);

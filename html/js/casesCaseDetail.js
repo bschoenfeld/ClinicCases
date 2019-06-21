@@ -263,15 +263,28 @@ function checkConflicts(caseId) {
         $('.initial_conflicts_checked_display button').html('Check');
         $('.initial_conflicts_checked_display button').attr("disabled", null);
 
-        var serverResponse = $.parseJSON(data);
-        if (serverResponse.conflicts === true) {
-            //$(panelTarget).find('span.conflicts_number')
-            //.html('<span class="msg_number"> (' + serverResponse.number + ')</span>');
-            console.log(serverResponse);
-            alert("Conflicts found!");
+        var response = $.parseJSON(data);
+        var display = $('.vplc_conflicts_review_needed_display .case_data_value').html('');
+
+        if (response.conflicts > 0) {
+            display.append($('<div>').html('Yes'));
         } else {
-            alert("No conflicts found");
+            display.append($('<div>').html('No'));
         }
+
+        response.parties.forEach(party => {
+            if (party.name.trim() !== '') {
+                display.append($('<div>').html(party.name + ' (' + party.role + ')'));
+                if(!party.matches.length) {
+                    display.append($('<div style="margin-left:10px">').html('No conflicts'));
+                } else {
+                    party.matches.forEach(match => {
+                        display.append($('<div style="margin-left:10px">').html(match.name + ' (' + Math.floor(match.percentage) + '%) [Airtable Id: ' + match.airtableId + ']'));
+                    });
+                }
+            }
+        });
+        display.append($('<div>').html(response.namesChecked + ' names checked for conflicts'));
     });
 }
 
