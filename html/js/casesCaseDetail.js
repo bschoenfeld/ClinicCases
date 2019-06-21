@@ -264,6 +264,12 @@ function checkConflicts(caseId) {
         $('.initial_conflicts_checked_display button').attr("disabled", null);
 
         var response = $.parseJSON(data);
+        if (response.dbUpdated) {
+            $('.initial_conflicts_checked_display .case_data_value').html('Yes');
+        } else {
+            $('.initial_conflicts_checked_display .case_data_value').html('No - something went wrong with conflict check');
+        }
+
         var display = $('.vplc_conflicts_review_needed_display .case_data_value').html('');
 
         if (response.conflicts > 0) {

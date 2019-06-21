@@ -113,9 +113,30 @@ do {
 }
 while( $request = $response->next() );
 
+$dbUpdated = false;
+$dbError = false;
+
+if ($namesChecked > 0) {
+	$conflicts_review = 'No';
+	if ($conflictCount > 0) {
+		$conflicts_review = 'Yes';
+	}
+	$q = $dbh->prepare("UPDATE cm SET initial_conflicts_checked = 'Yes', vplc_conflicts_review_needed = ? WHERE id = ?");
+	$q->bindParam(1,$conflicts_review);
+	$q->bindParam(2,$id);
+	$q->execute();
+
+	$dbUpdated = true;
+
+	$error = $q->errorInfo();
+	$dbError = $error[1];
+}
+
 $return = array(
 	'conflicts' => $conflictCount, 
 	'namesChecked' => $namesChecked,
 	'namesSkipped' => $namesSkipped,
+	'dbUpdated' => $dbUpdated,
+	'dbError' => $dbError,
 	'parties' => $parties);
 echo json_encode($return);
