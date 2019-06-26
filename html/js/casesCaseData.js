@@ -205,6 +205,15 @@ function formatCaseData(thisPanel, type) { //Apply CSS
         $('input:[name="monthly_income"]').keyup(calcAnnualIncome);
         $('input:[name="annual_income"]').keyup(calcMonthlyIncome);
 
+        // Make sure hitting 'ENTER' on input's doesn't do anything
+        $('.new_case_data input').bind('keyup keypress', function(e) {
+            var keyCode = e.keyCode || e.which;
+            if (keyCode === 13) { 
+                e.preventDefault();
+                return false;
+            }
+        });
+
         thisPanel.find('button.case_modify_submit').button({icons: {primary: 'fff-icon-page-white-get'}, text: true});
         thisPanel.find('button.case_cancel_submit').button({icons: {primary: 'fff-icon-cross'}, text: true});
     } else {  //display case data
