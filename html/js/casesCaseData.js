@@ -6,6 +6,8 @@
 
 function formatCaseData(thisPanel, type) { //Apply CSS
     var navItem = thisPanel.siblings('.case_detail_nav').find('#item2');
+    navItem.find('div').remove();
+
     var toolsHeight = navItem.outerHeight();
     var thisPanelHeight = navItem.closest('.case_detail_nav').height();
     var documentsWindowHeight = thisPanelHeight - toolsHeight;
@@ -225,10 +227,28 @@ function formatCaseData(thisPanel, type) { //Apply CSS
         //remove the id
         thisPanel.find('div.id_display').remove();
     }
+
+    var sectionTitleClass = '.case_data_section_title';
+    if (type === 'new' || type === 'edit') {
+        sectionTitleClass = '.new_case_data_section_title';
+    }
+    
+    thisPanel.find('.case_detail_panel_casenotes').scrollTop(0);
+
+    $.each(thisPanel.find(sectionTitleClass), function() { 
+        var bgColor = $( this ).css( "background-color" );
+        if(bgColor == "rgb(195, 217, 255)") {
+            navItem.append('<div class="header-primary" onclick="scrollToHeader(' + ($(this).offset().top - 200) + ')">' + $(this).text() + '</div>');
+        } else if(bgColor == "rgb(255, 255, 220)") {
+            navItem.append('<div class="header-secondary" onclick="scrollToHeader(' + ($(this).offset().top - 200)+ ')">' + $(this).text() + '</div>'); 
+        }
+    });
 }
 
 //User clicks on Case Data in left-side navigation
 $('.case_detail_nav #item2').live('click', function () {
+    if($(this).hasClass('selected')) return;
+
     var thisPanel = $(this).closest('.case_detail_nav').siblings('.case_detail_panel');
     var caseId = $(this).closest('.case_detail_nav').siblings('.case_detail_panel').data('CaseNumber');
     var type;
@@ -246,6 +266,11 @@ $('.case_detail_nav #item2').live('click', function () {
         formatCaseData(thisPanel, type);
     });
 });
+
+var scrollToHeader = function(location) {
+    $('.case_detail_panel_casenotes').scrollTop(location);
+    return false;
+}
 
 //Listen for edit
 $('button.case_data_edit').live('click', function () {

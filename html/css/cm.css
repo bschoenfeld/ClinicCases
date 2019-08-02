@@ -301,6 +301,25 @@ ul.case_detail_nav_list > li.selected:before {content: "\0020 \0020 \0020 \00BB 
 ul.case_detail_nav_list > #item4 {display: none;}
 ul.case_detail_nav_list > #item5 {display: none;}
 ul.case_detail_nav_list > #item7 {display: none;}
+
+ul.case_detail_nav_list > #item2 div {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    padding-bottom: 3px;
+    display: list-item;
+    list-style-type: disc;
+    list-style-position: inside;
+}
+
+ul.case_detail_nav_list > #item2 .header-primary {
+    padding-left: 20px;
+}
+
+ul.case_detail_nav_list > #item2 .header-secondary {
+    padding-left: 35px;
+}
+
 /*
 Width has to be set below in pixels below to accomodate jScrollPane
 */
