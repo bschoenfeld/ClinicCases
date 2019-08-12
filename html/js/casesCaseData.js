@@ -236,11 +236,37 @@ function formatCaseData(thisPanel, type) { //Apply CSS
     thisPanel.find('.case_detail_panel_casenotes').scrollTop(0);
 
     $.each(thisPanel.find(sectionTitleClass), function() { 
-        var bgColor = $( this ).css( "background-color" );
-        if(bgColor == "rgb(195, 217, 255)") {
-            navItem.append('<div class="header-primary" onclick="scrollToHeader(' + ($(this).offset().top - 200) + ')">' + $(this).text() + '</div>');
-        } else if(bgColor == "rgb(255, 255, 220)") {
-            navItem.append('<div class="header-secondary" onclick="scrollToHeader(' + ($(this).offset().top - 200)+ ')">' + $(this).text() + '</div>'); 
+        var menuText = $(this).text();
+
+        if(menuText === "CASE INTAKE") {
+            menuText = "Case Intake";
+        } else if(menuText === "Tenant Identity") {
+            menuText = "Tenant ID";
+        } else if(menuText === "Other Conflict Check Information") {
+            menuText = "Conflicts";
+        } else if(menuText === "Tenant Personal Details") {
+            menuText = "Tenant Info";
+        } else if(menuText === "Household Size and Finances") {
+            menuText = "Household";
+        } else if(menuText === "Housing") {
+            menuText = "Housing";
+        } else if(menuText === "Eviction") {
+            menuText = "Eviction";
+        }else if(menuText === "ATTORNEY ADVICE") {
+            menuText = "Attorney Advice";
+        } else if(menuText === "VPLC FOLLOW UP & REVIEW") {
+            menuText = "VPLC Follow Up";
+        } else {
+            menuText = null;
+        }
+
+        if(menuText) {
+            var bgColor = $( this ).css( "background-color" );
+            if(bgColor == "rgb(195, 217, 255)") {
+                navItem.append('<div class="header-primary" onclick="scrollToHeader(' + ($(this).offset().top - 200) + ')">' + menuText + '</div>');
+            } else if(bgColor == "rgb(255, 255, 220)") {
+                navItem.append('<div class="header-secondary" onclick="scrollToHeader(' + ($(this).offset().top - 200)+ ')">' + menuText + '</div>'); 
+            }
         }
     });
 }
