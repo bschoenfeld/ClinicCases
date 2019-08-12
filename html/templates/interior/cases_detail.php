@@ -56,9 +56,9 @@
 
 		<li id="item1" class="selected">Case Notes</li>
 
-		<li id="item2">Case Data</li>
-
 		<li id="item3">Documents</li>
+		
+		<li id="item2">Case Data</li>
 
 		<li id="item4">Events</li>
 
