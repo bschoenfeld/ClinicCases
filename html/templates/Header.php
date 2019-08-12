@@ -4,7 +4,7 @@
 <!--[if IE 7]>    <html class="ie7"> <![endif]-->
 
 <head>
-	<title>ClinicCases - <?php echo CC_PROGRAM_NAME; ?></title>
+	<title><?php echo CC_PROGRAM_NAME; ?></title>
     <meta charset="utf-8">
 	<meta name="robots" content="noindex">
 
