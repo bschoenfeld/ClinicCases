@@ -7,3 +7,5 @@ uploads/*
 *.vim!
 *.swo
 
+composer.lock
+vendor/*
