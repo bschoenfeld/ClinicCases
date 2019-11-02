@@ -4,17 +4,35 @@ require('lib/php/auth/session_check.php');
 require('db.php');
 require_once('vendor/autoload.php');
 
-function getApiInstance($dbh) {
+function getApiConfig($dbh) {
     $q = $dbh->prepare("SELECT accessToken FROM pp_tokens order by expires DESC limit 1");
     $q->execute();
     $tokens = $q->fetchAll(PDO::FETCH_ASSOC);
     
-    $config = \Swagger\Client\Configuration::getDefaultConfiguration()->setAccessToken($tokens[0]['accessToken']);
-    
+    return \Swagger\Client\Configuration::getDefaultConfiguration()->setAccessToken($tokens[0]['accessToken']);
+}
+
+function getPpAccountsApi($config) {
     return new \Swagger\Client\Api\AccountsApi(
         new \GuzzleHttp\Client(),
         $config
     );
+}
+
+function getPpCustomFields($config) {
+    $customFieldsApi = new \Swagger\Client\Api\CustomFieldsApi(
+        new \GuzzleHttp\Client(),
+        $config
+    );
+    $customFields = $customFieldsApi->customFieldsGetCustomFieldsForContact();
+    print_r($customFields);
+    $customFieldIds = array();
+
+    foreach($customFields as $customField) {
+        $customFieldIds[$customField['label']] = $customField['id'];
+    }
+
+    return $customFieldIds;
 }
 
 function getPpContacts($apiInstance) {
@@ -22,7 +40,10 @@ function getPpContacts($apiInstance) {
 
     $accounts = $apiInstance->accountsGetAccounts();
     foreach($accounts as $account) {
-        $contact = array('name' => $account['display_name']);
+        $contact = array(
+            'firstName' => $account['primary_contact']['first_name'],
+            'lastName' => $account['primary_contact']['last_name']
+        );
 
         foreach($account['primary_contact']['custom_field_values'] as $cf) {
             switch($cf['custom_field_ref']['label']) {
@@ -58,7 +79,8 @@ function getEhContacts($dbh) {
 
     foreach($cases as $case) {
         $contacts[] = array(
-            'name' => $case['first_name'] . ' ' . $case['last_name'],
+            'firstName' => $case['first_name'],
+            'lastName' => $case['last_name'],
             'role' => 'Tenant',
             'adverseParty' => 'No',
             'ehCaseNumber' => $case['clinic_id']
@@ -66,7 +88,8 @@ function getEhContacts($dbh) {
 
         if ($case['landlord_last_name'] != '') {
             $contacts[] = array(
-                'name' => trim($case['landlord_first_name'] . ' ' . $case['landlord_last_name']),
+                'firstName' => $case['landlord_first_name'],
+                'lastName' => $case['landlord_last_name'],
                 'role' => 'Landlord',
                 'adverseParty' => 'Yes',
                 'ehCaseNumber' => $case['clinic_id']
@@ -75,7 +98,8 @@ function getEhContacts($dbh) {
 
         if ($case['property_manager_last_name'] != '') {
             $contacts[] = array(
-                'name' => trim($case['property_manager_first_name'] . ' ' . $case['property_manager_last_name']),
+                'firstName' => $case['property_manager_first_name'],
+                'lastName' => $case['property_manager_last_name'],
                 'role' => 'Property Manager',
                 'adverseParty' => 'Yes',
                 'ehCaseNumber' => $case['clinic_id']
@@ -84,7 +108,8 @@ function getEhContacts($dbh) {
 
         if ($case['other_party_a_last_name'] != '') {
             $contacts[] = array(
-                'name' => trim($case['other_party_a_first_name'] . ' ' . $case['other_party_a_last_name']),
+                'firstName' => $case['other_party_a_first_name'],
+                'lastName' => $case['other_party_a_last_name'],
                 'role' => 'Other Party A',
                 'adverseParty' => $case['other_party_a_adverse'],
                 'ehCaseNumber' => $case['clinic_id']
@@ -93,7 +118,8 @@ function getEhContacts($dbh) {
 
         if ($case['other_party_b_last_name'] != '') {
             $contacts[] = array(
-                'name' => trim($case['other_party_b_first_name'] . ' ' . $case['other_party_b_last_name']),
+                'firstName' => $case['other_party_b_first_name'],
+                'lastName' => $case['other_party_b_last_name'],
                 'role' => 'Other Party B',
                 'adverseParty' => $case['other_party_b_adverse'],
                 'ehCaseNumber' => $case['clinic_id']
@@ -102,7 +128,8 @@ function getEhContacts($dbh) {
 
         if ($case['other_party_c_last_name'] != '') {
             $contacts[] = array(
-                'name' => trim($case['other_party_c_first_name'] . ' ' . $case['other_party_c_last_name']),
+                'firstName' => $case['other_party_c_first_name'],
+                'lastName' => $case['other_party_c_last_name'],
                 'role' => 'Other Party C',
                 'adverseParty' => $case['other_party_c_adverse'],
                 'ehCaseNumber' => $case['clinic_id']
@@ -114,16 +141,78 @@ function getEhContacts($dbh) {
 }
 
 try {
+    // Connect to PP
+    $ppApiConfig = getApiConfig($dbh);
+    $ppAccountsApi = getPpAccountsApi($ppApiConfig);
+    $ppCustomFields = getPpCustomFields($ppApiConfig);
+
+    // Get PP contacts
+    $ppContacts = getPpContacts($ppAccountsApi);
+    echo 'Found ' . count($ppContacts) . ' PP contacts <br>';
+
+    // Get EH contacts
     $ehContacts = getEhContacts($dbh);
-    foreach($ehContacts as $contact) {
-        print_r($contact);
-        echo "<br>";
+    echo 'Found ' . count($ehContacts) . ' EH contacts <br>';
+
+    // Loop through the EH contacts
+    // If the contact was DELETED, make sure there aren't any records left in PP
+    // Otherwise, make sure all the contacts are in PP
+    foreach($ehContacts as $ehContact) {
+        $foundInPp = False;
+        foreach($ppContacts as $ppContact) {
+            if($ehContact['ehCaseNumber'] == $ppContact['ehCaseNumber'] && $ehContact['role'] == $ppContact['role']) {
+                // See if we need to update PP with any changes made in EH
+                $foundInPp = True;
+                break;
+            }
+        }
+
+        if (!$foundInPp) {
+            // Create in PP
+            $newPpAccount = new \Swagger\Client\Model\Account(
+                array(
+                    'id' => trim(com_create_guid(), '{}'),
+                    'primary_contact' => new \Swagger\Client\Model\Contact(
+                        array(
+                            'id' => trim(com_create_guid(), '{}'),
+                            'first_name' => $ehContact['firstName'],
+                            'last_name' => $ehContact['lastName'],
+                            'custom_field_values' => array(
+                                new \Swagger\Client\Model\CustomFieldValue(
+                                    array(
+                                        'value_string' => $ehContact['role'],
+                                        'custom_field_ref' => new \Swagger\Client\Model\CustomFieldRef(
+                                            array('id' => $ppCustomFields['Role'], 'value_type' => 'TextBox')
+                                        )
+                                    )
+                                ),
+                                new \Swagger\Client\Model\CustomFieldValue(
+                                    array(
+                                        'value_string' => $ehContact['adverseParty'],
+                                        'custom_field_ref' => new \Swagger\Client\Model\CustomFieldRef(
+                                            array('id' => $ppCustomFields['Adverse Party'], 'value_type' => 'TextBox')
+                                        )
+                                    )
+                                ),
+                                new \Swagger\Client\Model\CustomFieldValue(
+                                    array(
+                                        'value_string' => $ehContact['ehCaseNumber'],
+                                        'custom_field_ref' => new \Swagger\Client\Model\CustomFieldRef(
+                                            array('id' => $ppCustomFields['EH Case Number'], 'value_type' => 'TextBox')
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+
+            //print_r($newPpAccount);
+            print_r($ppAccountsApi->accountsPostAccount($newPpAccount));
+            break;
+        }
     }
-
-    $apiInstance = getApiInstance($dbh);
-
-    $ppContacts = getPpContacts($apiInstance);
-    print_r($ppContacts);
 
 } catch(Exception $e) {
 	echo 'Caught exception: ',  $e->getMessage(), "\n";

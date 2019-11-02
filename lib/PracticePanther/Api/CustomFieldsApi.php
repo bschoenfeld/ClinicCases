@@ -634,7 +634,7 @@ class CustomFieldsApi
      */
     public function customFieldsGetCustomFieldsForContactWithHttpInfo($created_since = null, $updated_since = null)
     {
-        $returnType = '\Swagger\Client\Model\CustomField';
+        $returnType = '\Swagger\Client\Model\CustomField[]';
         $request = $this->customFieldsGetCustomFieldsForContactRequest($created_since, $updated_since);
 
         try {
