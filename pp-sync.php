@@ -25,7 +25,7 @@ function getPpCustomFields($config) {
         $config
     );
     $customFields = $customFieldsApi->customFieldsGetCustomFieldsForContact();
-    print_r($customFields);
+
     $customFieldIds = array();
 
     foreach($customFields as $customField) {
@@ -39,6 +39,7 @@ function getPpContacts($apiInstance) {
     $contacts = array();
 
     $accounts = $apiInstance->accountsGetAccounts();
+
     foreach($accounts as $account) {
         $contact = array(
             'firstName' => $account['primary_contact']['first_name'],
@@ -154,6 +155,8 @@ try {
     $ehContacts = getEhContacts($dbh);
     echo 'Found ' . count($ehContacts) . ' EH contacts <br>';
 
+    $contactsAdded = 0;
+
     // Loop through the EH contacts
     // If the contact was DELETED, make sure there aren't any records left in PP
     // Otherwise, make sure all the contacts are in PP
@@ -182,7 +185,7 @@ try {
                                     array(
                                         'value_string' => $ehContact['role'],
                                         'custom_field_ref' => new \Swagger\Client\Model\CustomFieldRef(
-                                            array('id' => $ppCustomFields['Role'], 'value_type' => 'TextBox')
+                                            array('id' => $ppCustomFields['Role'])
                                         )
                                     )
                                 ),
@@ -190,7 +193,7 @@ try {
                                     array(
                                         'value_string' => $ehContact['adverseParty'],
                                         'custom_field_ref' => new \Swagger\Client\Model\CustomFieldRef(
-                                            array('id' => $ppCustomFields['Adverse Party'], 'value_type' => 'TextBox')
+                                            array('id' => $ppCustomFields['Adverse Party'])
                                         )
                                     )
                                 ),
@@ -198,7 +201,7 @@ try {
                                     array(
                                         'value_string' => $ehContact['ehCaseNumber'],
                                         'custom_field_ref' => new \Swagger\Client\Model\CustomFieldRef(
-                                            array('id' => $ppCustomFields['EH Case Number'], 'value_type' => 'TextBox')
+                                            array('id' => $ppCustomFields['EH Case Number'])
                                         )
                                     )
                                 )
@@ -208,11 +211,12 @@ try {
                 )
             );
 
-            //print_r($newPpAccount);
-            print_r($ppAccountsApi->accountsPostAccount($newPpAccount));
-            break;
+            $ppAccountsApi->accountsPostAccount($newPpAccount);
+            $contactsAdded += 1;
         }
     }
+
+    echo 'Added ' . $contactsAdded . ' to PP';
 
 } catch(Exception $e) {
 	echo 'Caught exception: ',  $e->getMessage(), "\n";
