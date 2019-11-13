@@ -82,63 +82,81 @@ function getEhContacts($dbh) {
     $cases = $q->fetchAll(PDO::FETCH_ASSOC);
 
     foreach($cases as $case) {
-        if ($case['first_name'] == 'DELETED' && $case['last_name'] == 'DELETED') {
+        $firstName = trim($case['first_name']);
+        $lastName = trim($case['last_name']);
+
+        if ($firstName == 'DELETED' && $lastName == 'DELETED') {
+            $deleted[] = $case['clinic_id'];
+            continue;
+        }
+
+        if ($firstName == '' && $lastName == '') {
             $deleted[] = $case['clinic_id'];
             continue;
         }
 
         $contacts[] = array(
-            'firstName' => $case['first_name'],
-            'lastName' => $case['last_name'],
+            'firstName' => $firstName,
+            'lastName' => $lastName,
             'role' => 'Tenant',
             'adverseParty' => 'No',
             'ehCaseNumber' => $case['clinic_id']
         );
 
-        if ($case['landlord_last_name'] != '') {
+        $landlordFirstName = trim($case['landlord_first_name']);
+        $landlordLastName = trim($case['landlord_last_name']);
+        if ($landlordLastName != '') {
             $contacts[] = array(
-                'firstName' => $case['landlord_first_name'],
-                'lastName' => $case['landlord_last_name'],
+                'firstName' => $landlordFirstName,
+                'lastName' => $landlordLastName,
                 'role' => 'Landlord',
                 'adverseParty' => 'Yes',
                 'ehCaseNumber' => $case['clinic_id']
             );
         }
 
-        if ($case['property_manager_last_name'] != '') {
+        $managerFirstName = trim($case['property_manager_first_name']);
+        $managerLastName = trim($case['property_manager_last_name']);
+        if ($managerLastName != '') {
             $contacts[] = array(
-                'firstName' => $case['property_manager_first_name'],
-                'lastName' => $case['property_manager_last_name'],
+                'firstName' => $managerFirstName,
+                'lastName' => $managerLastName,
                 'role' => 'Property Manager',
                 'adverseParty' => 'Yes',
                 'ehCaseNumber' => $case['clinic_id']
             );
         }
 
-        if ($case['other_party_a_last_name'] != '') {
+        $otherAFirstName = trim($case['other_party_a_first_name']);
+        $otherALastName = trim($case['other_party_a_last_name']);
+        if ($otherAFirstName != '') {
             $contacts[] = array(
-                'firstName' => $case['other_party_a_first_name'],
-                'lastName' => $case['other_party_a_last_name'],
+                'firstName' => $otherAFirstName,
+                'lastName' => $otherALastName,
                 'role' => 'Other Party A',
                 'adverseParty' => $case['other_party_a_adverse'],
                 'ehCaseNumber' => $case['clinic_id']
             );
         }
 
-        if ($case['other_party_b_last_name'] != '') {
+        $otherBFirstName = trim($case['other_party_b_first_name']);
+        $otherBLastName = trim($case['other_party_b_last_name']);
+        if ($otherBFirstName != '') {
             $contacts[] = array(
-                'firstName' => $case['other_party_b_first_name'],
-                'lastName' => $case['other_party_b_last_name'],
+                'firstName' => $otherBFirstName,
+                'lastName' => $otherBLastName,
                 'role' => 'Other Party B',
                 'adverseParty' => $case['other_party_b_adverse'],
                 'ehCaseNumber' => $case['clinic_id']
             );
         }
 
-        if ($case['other_party_c_last_name'] != '') {
+        $otherCFirstName = trim($case['other_party_c_first_name']);
+        $otherCLastName = trim($case['other_party_c_last_name']);
+        if ($otherCFirstName != '') {
             $contacts[] = array(
-                'firstName' => $case['other_party_c_first_name'],
-                'lastName' => $case['other_party_c_last_name'],
+                'firstName' => $otherCFirstName,
+                'lastName' => $otherCLastName,
                 'role' => 'Other Party C',
                 'adverseParty' => $case['other_party_c_adverse'],
                 'ehCaseNumber' => $case['clinic_id']
