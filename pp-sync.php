@@ -40,8 +40,10 @@ function getPpContacts($apiInstance) {
 
     $accounts = $apiInstance->accountsGetAccounts();
 
-    foreach($accounts as $account) {
+    foreach ($accounts as $account) {
         $contact = array(
+            'accountId' => $account['id'],
+            'contactId' => $account['primary_contact']['id'],
             'firstName' => $account['primary_contact']['first_name'],
             'lastName' => $account['primary_contact']['last_name']
         );
@@ -68,6 +70,7 @@ function getPpContacts($apiInstance) {
 
 function getEhContacts($dbh) {
     $contacts = array();
+    $deleted = array();
 
     $q = $dbh->prepare("SELECT clinic_id, first_name, last_name,
         landlord_first_name, landlord_last_name,
@@ -79,6 +82,11 @@ function getEhContacts($dbh) {
     $cases = $q->fetchAll(PDO::FETCH_ASSOC);
 
     foreach($cases as $case) {
+        if ($case['first_name'] == 'DELETED' && $case['last_name'] == 'DELETED') {
+            $deleted[] = $case['clinic_id'];
+            continue;
+        }
+
         $contacts[] = array(
             'firstName' => $case['first_name'],
             'lastName' => $case['last_name'],
@@ -138,7 +146,50 @@ function getEhContacts($dbh) {
         }
     }
 
-    return $contacts;
+    return array('contacts' => $contacts, 'deleted' => $deleted);
+}
+
+function createPpContact($ehContact, $ppAccountsApi, $ppCustomFields) {
+    $newPpAccount = new \Swagger\Client\Model\Account(
+        array(
+            'id' => trim(com_create_guid(), '{}'),
+            'primary_contact' => new \Swagger\Client\Model\Contact(
+                array(
+                    'id' => trim(com_create_guid(), '{}'),
+                    'first_name' => $ehContact['firstName'],
+                    'last_name' => $ehContact['lastName'],
+                    'custom_field_values' => array(
+                        new \Swagger\Client\Model\CustomFieldValue(
+                            array(
+                                'value_string' => $ehContact['role'],
+                                'custom_field_ref' => new \Swagger\Client\Model\CustomFieldRef(
+                                    array('id' => $ppCustomFields['Role'])
+                                )
+                            )
+                        ),
+                        new \Swagger\Client\Model\CustomFieldValue(
+                            array(
+                                'value_string' => $ehContact['adverseParty'],
+                                'custom_field_ref' => new \Swagger\Client\Model\CustomFieldRef(
+                                    array('id' => $ppCustomFields['Adverse Party'])
+                                )
+                            )
+                        ),
+                        new \Swagger\Client\Model\CustomFieldValue(
+                            array(
+                                'value_string' => $ehContact['ehCaseNumber'],
+                                'custom_field_ref' => new \Swagger\Client\Model\CustomFieldRef(
+                                    array('id' => $ppCustomFields['EH Case Number'])
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    );
+
+    $ppAccountsApi->accountsPostAccount($newPpAccount);
 }
 
 try {
@@ -152,19 +203,40 @@ try {
     echo 'Found ' . count($ppContacts) . ' PP contacts <br>';
 
     // Get EH contacts
-    $ehContacts = getEhContacts($dbh);
+    $ehData = getEhContacts($dbh);
+    $ehContacts = $ehData['contacts'];
+    $ehDeletedCases = $ehData['deleted'];
     echo 'Found ' . count($ehContacts) . ' EH contacts <br>';
 
-    $contactsAdded = 0;
+    $toSync = array(
+        'adds' => array(),
+        'modifies' => array(),
+        'deletes' => array()
+    );
 
-    // Loop through the EH contacts
-    // If the contact was DELETED, make sure there aren't any records left in PP
-    // Otherwise, make sure all the contacts are in PP
+    // Loop through the PP contacts and see if we need to delete any
+    foreach ($ppContacts as $ppContact) {
+        if (in_array($ppContact['ehCaseNumber'], $ehDeletedCases)) {
+            $toSync['deletes'][] = array(
+                'accountId' => $ppContact['accountId'],
+                'contactId' => $ppContact['contactId']
+            );
+        }
+    }
+
+    // Loop through the EH contacts make sure all the contacts are in PP
     foreach($ehContacts as $ehContact) {
         $foundInPp = False;
         foreach($ppContacts as $ppContact) {
             if($ehContact['ehCaseNumber'] == $ppContact['ehCaseNumber'] && $ehContact['role'] == $ppContact['role']) {
                 // See if we need to update PP with any changes made in EH
+                if ($ehContact['firstName'] != $ppContact['firstName'] ||
+                    $ehContact['lastName'] != $ppContact['lastName'] ||
+                    $ehContact['adverseParty'] != $ppContact['adverseParty']) {
+                        $ehContact['accountId'] = $ppContact['accountId'];
+                        $ehContact['contactId'] = $ppContact['contactId'];
+                        $toSync['modifies'][] = $ehContact;
+                }
                 $foundInPp = True;
                 break;
             }
@@ -172,51 +244,12 @@ try {
 
         if (!$foundInPp) {
             // Create in PP
-            $newPpAccount = new \Swagger\Client\Model\Account(
-                array(
-                    'id' => trim(com_create_guid(), '{}'),
-                    'primary_contact' => new \Swagger\Client\Model\Contact(
-                        array(
-                            'id' => trim(com_create_guid(), '{}'),
-                            'first_name' => $ehContact['firstName'],
-                            'last_name' => $ehContact['lastName'],
-                            'custom_field_values' => array(
-                                new \Swagger\Client\Model\CustomFieldValue(
-                                    array(
-                                        'value_string' => $ehContact['role'],
-                                        'custom_field_ref' => new \Swagger\Client\Model\CustomFieldRef(
-                                            array('id' => $ppCustomFields['Role'])
-                                        )
-                                    )
-                                ),
-                                new \Swagger\Client\Model\CustomFieldValue(
-                                    array(
-                                        'value_string' => $ehContact['adverseParty'],
-                                        'custom_field_ref' => new \Swagger\Client\Model\CustomFieldRef(
-                                            array('id' => $ppCustomFields['Adverse Party'])
-                                        )
-                                    )
-                                ),
-                                new \Swagger\Client\Model\CustomFieldValue(
-                                    array(
-                                        'value_string' => $ehContact['ehCaseNumber'],
-                                        'custom_field_ref' => new \Swagger\Client\Model\CustomFieldRef(
-                                            array('id' => $ppCustomFields['EH Case Number'])
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            );
-
-            $ppAccountsApi->accountsPostAccount($newPpAccount);
-            $contactsAdded += 1;
+            //createPpContact($ehContact, $ppAccountsApi, $ppCustomFields);
+            $toSync['adds'][] = $ehContact;
         }
     }
 
-    echo 'Added ' . $contactsAdded . ' to PP';
+    echo json_encode($toSync);
 
 } catch(Exception $e) {
 	echo 'Caught exception: ',  $e->getMessage(), "\n";
