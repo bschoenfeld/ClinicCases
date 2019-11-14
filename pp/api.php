@@ -69,8 +69,9 @@ function getPpContacts($apiInstance, $onlyFromEh=false) {
     return $contacts;
 }
 
-function getEhContacts($dbh) {
+function getEhContacts($dbh, $clinicId=NULL) {
     $contacts = array();
+    $clinicIds = array();
     $deleted = array();
 
     $q = $dbh->prepare("SELECT clinic_id, first_name, last_name,
@@ -79,6 +80,18 @@ function getEhContacts($dbh) {
         other_party_a_first_name, other_party_a_last_name, other_party_a_adverse,
         other_party_b_first_name, other_party_b_last_name, other_party_b_adverse,
         other_party_c_first_name, other_party_c_last_name, other_party_c_adverse FROM cm");
+
+    if ($clinicId != null) {
+        $q = $dbh->prepare("SELECT clinic_id, first_name, last_name,
+            landlord_first_name, landlord_last_name,
+            property_manager_first_name, property_manager_last_name,
+            other_party_a_first_name, other_party_a_last_name, other_party_a_adverse,
+            other_party_b_first_name, other_party_b_last_name, other_party_b_adverse,
+            other_party_c_first_name, other_party_c_last_name, other_party_c_adverse FROM cm
+            WHERE clinic_id = ?");
+        $q->bindParam(1, $clinicId);
+    }
+
     $q->execute();
     $cases = $q->fetchAll(PDO::FETCH_ASSOC);
 
@@ -95,6 +108,8 @@ function getEhContacts($dbh) {
             $deleted[] = $case['clinic_id'];
             continue;
         }
+
+        $clinicIds[] = $case['clinic_id'];
 
         $contacts[] = array(
             'firstName' => $firstName,
@@ -165,7 +180,7 @@ function getEhContacts($dbh) {
         }
     }
 
-    return array('contacts' => $contacts, 'deleted' => $deleted);
+    return array('contacts' => $contacts, 'clinicIds' => $clinicIds, 'deleted' => $deleted);
 }
 
 function createPpContact($ehContact, $ppAccountsApi, $ppCustomFields) {

@@ -19,8 +19,13 @@ require('../lib/php/auth/session_check.php');
 <div>
     <button class="btn btn-primary m-3" id='sync-button'>Prepare Sync (no data will be modified)</button>
     <div class="m-3" id='sync-details'></div>
+
     <button class="btn btn-warning m-3" style='display:none' id='sync-run-button'>Run All Tasks (Practice Panther will be modified)</button>
     <div class="m-3" id='sync-status'></div>
+
+    <button class="btn btn-info m-3" style='display:none' id='conflict-run-button'>Check for Conflicts</button>
+    <div class="m-3" id='conflict-status'></div>
+    <div class="m-3" id='conflicts-found'></div>
 </div>
 
 <hr>
@@ -48,9 +53,12 @@ require('../lib/php/auth/session_check.php');
             allDone = false;
 
             $.post(name + '.php', task)
-                .done(function() {
+                .done(function(data) {
                     task.done = true;
                     $('#' + statusId).html(name + ' - ' + (i+1) + ' of ' + tasks.length);
+                    if (name == 'conflicts' && data.conflicts.length) {
+                        console.log(data);
+                    }
                     runSyncTask(tasks, name, statusId, next);
                 })
                 .fail(function(e){
@@ -79,6 +87,10 @@ require('../lib/php/auth/session_check.php');
         $('#delete-all-status').html('Delete All Complete');
     }
 
+    function conflictComplete() {
+        $('#conflict-status').html('Conflict Check Complete');
+    }
+
     $(function() {
 
         $('#sync-button').click(function() {
@@ -86,14 +98,21 @@ require('../lib/php/auth/session_check.php');
 
             $('#sync-details').html("Preparing Sync");
             $('#sync-run-button').hide();
+            $('#conflict-run-button').hide();
 
             $.get('sync.php')
                 .done(function(data){
-                    $('#sync-details').html('Sync Tasks To Run: <br>');
-                    $('#sync-details').append(data.adds.length + ' contacts will be added <br>');
-                    $('#sync-details').append(data.deletes.length + ' contacts will be deleted <br>');
-                    $('#sync-run-button').show();
                     window.toSync = data;
+
+                    if(data.adds.length || data.deletes.length) {
+                        $('#sync-details').html('Sync Tasks To Run: <br>');
+                        $('#sync-details').append(data.adds.length + ' contacts will be added <br>');
+                        $('#sync-details').append(data.deletes.length + ' contacts will be deleted <br>');
+                        $('#sync-run-button').show();
+                    } else {
+                        $('#sync-details').html('Nothing to sync. Conflict check can be run on ' + data.clinicIds.length + ' EH cases.');
+                        $('#conflict-run-button').show();
+                    }
                 })
                 .fail(function(e){
                     console.log(e);
@@ -127,6 +146,17 @@ require('../lib/php/auth/session_check.php');
         $('#delete-all-run-button').click(function() {
             if(!window.toDelete) return;
             runSyncTask(window.toDelete, 'delete', 'delete-all-status', deleteAllComplete);
+        });
+
+        $('#conflict-run-button').click(function() {
+            var tasks = [];
+            $.each(window.toSync.clinicIds, function() {
+                tasks.push({
+                    'clinicId': this,
+                    'threshold': 80
+                });
+            });
+            runSyncTask(tasks, 'conflicts', 'conflict-status', conflictComplete);
         });
     });
 </script>

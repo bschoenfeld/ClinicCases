@@ -23,7 +23,9 @@ try {
 
     $toSync = array(
         'adds' => array(),
-        'deletes' => array()
+        'deletes' => array(),
+        'clinicIds' => $ehData['clinicIds'],
+        'ppContacts' => $ppContacts
     );
 
     // Loop through the PP contacts and see if we need to delete any
