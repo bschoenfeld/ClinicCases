@@ -45,7 +45,7 @@ try {
 
     foreach ($ppContacts as $ppContact) {
         // If the PP contact is from this case, don't check for conflicts
-        if (isset($ppContact['clinicId']) && $ppContact['clinicId'] == $clinicId) {
+        if (isset($ppContact['ehCaseNumber']) && $ppContact['ehCaseNumber'] == $clinicId) {
             continue;
         }
 
