@@ -7,7 +7,7 @@ function getApiConfig($dbh) {
     $q->execute();
     $tokens = $q->fetchAll(PDO::FETCH_ASSOC);
     
-    
+
     return \Swagger\Client\Configuration::getDefaultConfiguration()->setAccessToken($tokens[0]['accessToken']);
 }
 
@@ -34,7 +34,7 @@ function getPpCustomFields($config) {
     return $customFieldIds;
 }
 
-function getPpContacts($apiInstance) {
+function getPpContacts($apiInstance, $onlyFromEh=false) {
     $contacts = array();
 
     $accounts = $apiInstance->accountsGetAccounts();
@@ -61,7 +61,9 @@ function getPpContacts($apiInstance) {
             }
         }
 
-        $contacts[] = $contact;
+        if (!$onlyFromEh || (array_key_exists('ehCaseNumber', $contact) && $contact['ehCaseNumber'] != NULL && $contact['ehCaseNumber'] != '')) {
+            $contacts[] = $contact;
+        }
     }
 
     return $contacts;

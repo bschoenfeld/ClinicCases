@@ -23,13 +23,22 @@ require('../lib/php/auth/session_check.php');
     <div class="m-3" id='sync-status'></div>
 </div>
 
+<hr>
+
+<div>
+    <button class="btn btn-primary m-3" id='delete-all-button'>Prepare Delete All (no data will be modified)</button>
+    <div class="m-3" id='delete-all-details'></div>
+    <button class="btn btn-danger m-3" style='display:none' id='delete-all-run-button'>Delete All EH Contacts (Practice Panther will be modified)</button>
+    <div class="m-3" id='delete-all-status'></div>
+</div>
+
 <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
 
 <script>
-    function runSyncTask(tasks, name, next) {
+    function runSyncTask(tasks, name, statusId, next) {
         var allDone = true;
 
         $.each(tasks, function(i) {
@@ -41,12 +50,12 @@ require('../lib/php/auth/session_check.php');
             $.post(name + '.php', task)
                 .done(function() {
                     task.done = true;
-                    $('#sync-status').html(name + ' - ' + (i+1) + ' of ' + tasks.length);
-                    runSyncTask(tasks, name, next);
+                    $('#' + statusId).html(name + ' - ' + (i+1) + ' of ' + tasks.length);
+                    runSyncTask(tasks, name, statusId, next);
                 })
                 .fail(function(e){
                     console.log(e);
-                    $('#sync-status').html(e.responseText);
+                    $('#' + statusId).html(e.responseText);
                 });
             return false;
         });
@@ -55,19 +64,19 @@ require('../lib/php/auth/session_check.php');
     }
 
     function runNextAdd() {
-        runSyncTask(window.toSync.adds, 'add', runNextModify);
-    }
-
-    function runNextModify() {
-        runSyncTask(window.toSync.modifies, 'modify', runNextDelete);
+        runSyncTask(window.toSync.adds, 'add', 'sync-status', runNextDelete);
     }
 
     function runNextDelete() {
-        runSyncTask(window.toSync.deletes, 'delete', syncComplete);
+        runSyncTask(window.toSync.deletes, 'delete', 'sync-status', syncComplete);
     }
 
     function syncComplete() {
+        $('#sync-status').html('Sync Complete');
+    }
 
+    function deleteAllComplete() {
+        $('#delete-all-status').html('Delete All Complete');
     }
 
     $(function() {
@@ -82,7 +91,6 @@ require('../lib/php/auth/session_check.php');
                 .done(function(data){
                     $('#sync-details').html('Sync Tasks To Run: <br>');
                     $('#sync-details').append(data.adds.length + ' contacts will be added <br>');
-                    $('#sync-details').append(data.modifies.length + ' contacts will be modifed <br>');
                     $('#sync-details').append(data.deletes.length + ' contacts will be deleted <br>');
                     $('#sync-run-button').show();
                     window.toSync = data;
@@ -96,6 +104,29 @@ require('../lib/php/auth/session_check.php');
         $('#sync-run-button').click(function() {
             if(!window.toSync) return;
             runNextAdd();
+        });
+
+        $('#delete-all-button').click(function() {
+            window.toDelete = null;
+
+            $('#delete-all-details').html("Getting list of contacts to delete");
+            $('#delete-all-run-button').hide();
+
+            $.get('delete_all.php')
+                .done(function(data){
+                    $('#delete-all-details').html(data.length + ' contacts will be deleted from Practice Panther');
+                    $('#delete-all-run-button').show();
+                    window.toDelete = data;
+                })
+                .fail(function(e){
+                    console.log(e);
+                    $('#sync-details').html(e.responseText);
+                });
+        });
+
+        $('#delete-all-run-button').click(function() {
+            if(!window.toDelete) return;
+            runSyncTask(window.toDelete, 'delete', 'delete-all-status', deleteAllComplete);
         });
     });
 </script>

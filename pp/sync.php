@@ -23,7 +23,6 @@ try {
 
     $toSync = array(
         'adds' => array(),
-        'modifies' => array(),
         'deletes' => array()
     );
 
@@ -48,7 +47,8 @@ try {
                     $ehContact['adverseParty'] != $ppContact['adverseParty']) {
                         $ehContact['accountId'] = $ppContact['accountId'];
                         $ehContact['contactId'] = $ppContact['contactId'];
-                        $toSync['modifies'][] = $ehContact;
+                        $toSync['deletes'][] = $ehContact;
+                        $toSync['adds'][] = $ppContact;
                 }
                 $foundInPp = True;
                 break;
