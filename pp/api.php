@@ -1,13 +1,12 @@
 <?php
-session_start();
-require('lib/php/auth/session_check.php');
-require('db.php');
-require_once('vendor/autoload.php');
+
+require_once('../vendor/autoload.php');
 
 function getApiConfig($dbh) {
     $q = $dbh->prepare("SELECT accessToken FROM pp_tokens order by expires DESC limit 1");
     $q->execute();
     $tokens = $q->fetchAll(PDO::FETCH_ASSOC);
+    
     
     return \Swagger\Client\Configuration::getDefaultConfiguration()->setAccessToken($tokens[0]['accessToken']);
 }
@@ -210,69 +209,4 @@ function createPpContact($ehContact, $ppAccountsApi, $ppCustomFields) {
     $ppAccountsApi->accountsPostAccount($newPpAccount);
 }
 
-try {
-    // Connect to PP
-    $ppApiConfig = getApiConfig($dbh);
-    $ppAccountsApi = getPpAccountsApi($ppApiConfig);
-    $ppCustomFields = getPpCustomFields($ppApiConfig);
-
-    // Get PP contacts
-    $ppContacts = getPpContacts($ppAccountsApi);
-    echo 'Found ' . count($ppContacts) . ' PP contacts <br>';
-
-    // Get EH contacts
-    $ehData = getEhContacts($dbh);
-    $ehContacts = $ehData['contacts'];
-    $ehDeletedCases = $ehData['deleted'];
-    echo 'Found ' . count($ehContacts) . ' EH contacts <br>';
-
-    $toSync = array(
-        'adds' => array(),
-        'modifies' => array(),
-        'deletes' => array()
-    );
-
-    // Loop through the PP contacts and see if we need to delete any
-    foreach ($ppContacts as $ppContact) {
-        if (in_array($ppContact['ehCaseNumber'], $ehDeletedCases)) {
-            $toSync['deletes'][] = array(
-                'accountId' => $ppContact['accountId'],
-                'contactId' => $ppContact['contactId']
-            );
-        }
-    }
-
-    // Loop through the EH contacts make sure all the contacts are in PP
-    foreach($ehContacts as $ehContact) {
-        $foundInPp = False;
-        foreach($ppContacts as $ppContact) {
-            if($ehContact['ehCaseNumber'] == $ppContact['ehCaseNumber'] && $ehContact['role'] == $ppContact['role']) {
-                // See if we need to update PP with any changes made in EH
-                if ($ehContact['firstName'] != $ppContact['firstName'] ||
-                    $ehContact['lastName'] != $ppContact['lastName'] ||
-                    $ehContact['adverseParty'] != $ppContact['adverseParty']) {
-                        $ehContact['accountId'] = $ppContact['accountId'];
-                        $ehContact['contactId'] = $ppContact['contactId'];
-                        $toSync['modifies'][] = $ehContact;
-                }
-                $foundInPp = True;
-                break;
-            }
-        }
-
-        if (!$foundInPp) {
-            // Create in PP
-            //createPpContact($ehContact, $ppAccountsApi, $ppCustomFields);
-            $toSync['adds'][] = $ehContact;
-        }
-    }
-
-    echo json_encode($toSync);
-
-} catch(Exception $e) {
-	echo 'Caught exception: ',  $e->getMessage(), "\n";
-
-	print_r($e);
-}
-
-echo "Done";
+?>
