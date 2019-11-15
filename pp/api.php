@@ -71,7 +71,6 @@ function getPpContacts($apiInstance, $onlyFromEh=false) {
 
 function getEhContacts($dbh, $clinicId=NULL) {
     $contacts = array();
-    $clinicIds = array();
     $deleted = array();
 
     $q = $dbh->prepare("SELECT clinic_id, first_name, last_name,
@@ -108,8 +107,6 @@ function getEhContacts($dbh, $clinicId=NULL) {
             $deleted[] = $case['clinic_id'];
             continue;
         }
-
-        $clinicIds[] = $case['clinic_id'];
 
         $contacts[] = array(
             'firstName' => $firstName,
@@ -180,7 +177,7 @@ function getEhContacts($dbh, $clinicId=NULL) {
         }
     }
 
-    return array('contacts' => $contacts, 'clinicIds' => $clinicIds, 'deleted' => $deleted);
+    return array('contacts' => $contacts, 'deleted' => $deleted);
 }
 
 function createPpContact($ehContact, $ppAccountsApi, $ppCustomFields) {

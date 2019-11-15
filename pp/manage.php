@@ -56,9 +56,6 @@ require('../lib/php/auth/session_check.php');
                 .done(function(data) {
                     task.done = true;
                     $('#' + statusId).html(name + ' - ' + (i+1) + ' of ' + tasks.length);
-                    if (name == 'conflicts' && data.conflicts.length) {
-                        console.log(data);
-                    }
                     runSyncTask(tasks, name, statusId, next);
                 })
                 .fail(function(e){
@@ -110,7 +107,7 @@ require('../lib/php/auth/session_check.php');
                         $('#sync-details').append(data.deletes.length + ' contacts will be deleted <br>');
                         $('#sync-run-button').show();
                     } else {
-                        $('#sync-details').html('Nothing to sync. Conflict check can be run on ' + data.clinicIds.length + ' EH cases.');
+                        $('#sync-details').html('Nothing to sync. Conflict check can be run on EH cases.');
                         $('#conflict-run-button').show();
                     }
                 })
@@ -149,14 +146,44 @@ require('../lib/php/auth/session_check.php');
         });
 
         $('#conflict-run-button').click(function() {
-            var tasks = [];
-            $.each(window.toSync.clinicIds, function() {
-                tasks.push({
-                    'clinicId': this,
-                    'threshold': 80
+            $.get('conflicts.php')
+                .done(function(data){
+                    console.log(data);
+                    if (data.conflicts.length) {
+                        $('#conflict-status').html(data.conflicts.length + ' conflicts found');
+                        $.each(data.conflicts, function() {
+                            // Write EH contact details
+                            var text = this.eh.ehCaseNumber;
+                            text += ' - <b>' + this.eh.firstName + ' ' + this.eh.lastName + '</b> ' + this.eh.role;
+                            if (this.eh.adverseParty == 'No')
+                                text += ' (Not Adverse)';
+                            else
+                                text += ' (Adverse)';
+
+                            // Write PP contact details
+                            text += ' || PP Contact: ';
+                            text += '<b>' + this.pp.firstName + ' ' + this.pp.lastName + '</b>';
+                            if (this.pp.ehCaseNumber)
+                                text += ' EH Case Id:' + this.pp.ehCaseNumber;
+                            else
+                                text += ' Not from EH';
+
+                            if (this.pp.adverseParty == 'No')
+                                text += ' (Not Adverse)';
+                            else if(this.pp.adverseParty == 'Yes')
+                                text += ' (Adverse)';
+                            else
+                                text += ' (Unknown Adversity)';
+                            $('#conflict-status').append('<div class="ml-5">' + text + '</div>')
+                        });
+                    } else {
+                        $('#conflict-status').html('No conflicts found');
+                    }
+                })
+                .fail(function(e){
+                    console.log(e);
+                    $('#conflict-status').html(e.responseText);
                 });
-            });
-            runSyncTask(tasks, 'conflicts', 'conflict-status', conflictComplete);
         });
     });
 </script>

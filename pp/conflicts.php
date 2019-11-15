@@ -11,45 +11,35 @@ try {
 
     if (isset($_GET['clinicId'])) {
         $clinicId = $_GET['clinicId'];
-    } else if(isset($_POST['clinicId'])) {
-        $clinicId = $_POST['clinicId'];
-        $matchThreshold = $_POST['threshold'];
     }
+    
+    // Connect to PP
+    $ppApiConfig = getApiConfig($dbh);
+    $ppAccountsApi = getPpAccountsApi($ppApiConfig);
+    $ppCustomFields = getPpCustomFields($ppApiConfig);
 
-    if ($clinicId == NULL) {
-        throw new Exception('No clinic id');
-    }
-
-    $ppContacts = NULL;
-
-    if(isset($_POST['ppContacts'])) {
-        $ppContacts = $_POST['ppContacts'];
-    } else {
-        // Connect to PP
-        $ppApiConfig = getApiConfig($dbh);
-        $ppAccountsApi = getPpAccountsApi($ppApiConfig);
-        $ppCustomFields = getPpCustomFields($ppApiConfig);
-
-        // Get PP contacts
-        $ppContacts = getPpContacts($ppAccountsApi);
-    }
+    // Get PP contacts
+    $ppContacts = getPpContacts($ppAccountsApi);
     
     // Get EH contacts
     $ehData = getEhContacts($dbh, $clinicId);
     $ehContacts = $ehData['contacts'];
 
     $conflictCheck = array(
-        'clinicId' => $clinicId,
-        'conflicts'=> array()
+        'ppContactCount' => count($ppContacts),
+        'ehContactCount' => count($ehContacts),
+        'checkedCount' => 0,
+        'conflicts' => array()
     );
 
     foreach ($ppContacts as $ppContact) {
-        // If the PP contact is from this case, don't check for conflicts
-        if (isset($ppContact['ehCaseNumber']) && $ppContact['ehCaseNumber'] == $clinicId) {
-            continue;
-        }
 
         foreach($ehContacts as $ehContact) {
+            // If the PP contact is from this case, don't check for conflicts
+            if (isset($ppContact['ehCaseNumber']) && $ppContact['ehCaseNumber'] == $ehContact['ehCaseNumber']) {
+                continue;
+            }
+
             // If both contacts have their adverse party field and they are both 'No' then it can't be a conflict
             if ($ehContact['adverseParty'] == 'No' && $ppContact['adverseParty'] == 'No') {
                 continue;
@@ -59,6 +49,8 @@ try {
             if ($ehContact['adverseParty'] == 'Yes' && $ppContact['adverseParty'] == 'Yes') {
                 continue;
             }
+
+            $conflictCheck['checkedCount'] += 1;
 
             $ppName = $ppContact['firstName'] . ' ' . $ppContact['lastName'];
             $ehName = $ehContact['firstName'] . ' ' . $ehContact['lastName'];

@@ -23,9 +23,7 @@ try {
 
     $toSync = array(
         'adds' => array(),
-        'deletes' => array(),
-        'clinicIds' => $ehData['clinicIds'],
-        'ppContacts' => $ppContacts
+        'deletes' => array()
     );
 
     // Loop through the PP contacts and see if we need to delete any
@@ -49,8 +47,8 @@ try {
                     $ehContact['adverseParty'] != $ppContact['adverseParty']) {
                         $ehContact['accountId'] = $ppContact['accountId'];
                         $ehContact['contactId'] = $ppContact['contactId'];
-                        $toSync['deletes'][] = $ehContact;
-                        $toSync['adds'][] = $ppContact;
+                        $toSync['deletes'][] = $ppContact;
+                        $toSync['adds'][] = $ehContact;
                 }
                 $foundInPp = True;
                 break;
