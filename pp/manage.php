@@ -16,6 +16,10 @@ require('../lib/php/auth/session_check.php');
 
 <h4>Manage Practice Panther</h4>
 
+<a class='btn btn-secondary m-3' href='connect.php'>Reconnect to Practice Panther</a>
+
+<hr>
+
 <div>
     <button class="btn btn-primary m-3" id='sync-button'>Prepare Sync (no data will be modified)</button>
     <div class="m-3" id='sync-details'></div>
