@@ -2,13 +2,58 @@
 
 require_once('../vendor/autoload.php');
 
+function refreshPpToken($dbh, $refreshToken) {
+    $provider = new \League\OAuth2\Client\Provider\GenericProvider([
+		'clientId'                => PP_CLIENT_ID,
+		'clientSecret'            => PP_CLIENT_SECRET,
+		'redirectUri'             => 'https://evictionhelpline.org/helplinecms/pp.php',
+		'urlAuthorize'            => 'https://app.practicepanther.com/OAuth/Authorize',
+		'urlAccessToken'          => 'https://app.practicepanther.com/OAuth/Token',
+		'urlResourceOwnerDetails' => 'https://app.practicepanther.com/'
+    ]);
+
+    $accessToken = $provider->getAccessToken('refresh_token', [
+        'refresh_token' => $refreshToken
+    ]);
+
+    $epoch = $accessToken->getExpires();
+    $dt = new DateTime("@$epoch");
+
+    $q = $dbh->prepare("INSERT INTO pp_tokens (id, accessToken, refreshToken, expires) VALUES (NULL, :accessToken, :refreshToken, :expires);");
+    $data = array(
+        'accessToken' => $accessToken->getToken(),
+        'refreshToken' => $accessToken->getRefreshToken(),
+        'expires' => $dt->format('Y-m-d H:i:s')
+    );
+    $q->execute($data);
+
+    return $accessToken->getToken();
+}
+
 function getApiConfig($dbh) {
-    $q = $dbh->prepare("SELECT accessToken FROM pp_tokens order by expires DESC limit 1");
+    // lock db
+    $q = $dbh->prepare("LOCK TABLE pp_tokens WRITE");
+    $q->execute();
+
+    $q = $dbh->prepare("SELECT accessToken, refreshToken, expires FROM pp_tokens order by expires DESC limit 1");
     $q->execute();
     $tokens = $q->fetchAll(PDO::FETCH_ASSOC);
+    $accessToken = $tokens[0]['accessToken'];
     
+    $soon = new DateTime("now", new DateTimeZone("UTC"));
+    $soon->add(new DateInterval('PT10M'));
 
-    return \Swagger\Client\Configuration::getDefaultConfiguration()->setAccessToken($tokens[0]['accessToken']);
+    $tokenExpires = new DateTime($tokens[0]['expires'], new DateTimeZone("UTC"));
+
+    if ($tokenExpires < $soon) {
+        $accessToken = refreshPpToken($dbh, $tokens[0]['refreshToken']);
+    }
+
+    // unlock db
+    $q = $dbh->prepare("UNLOCK TABLES");
+    $q->execute();
+
+    return \Swagger\Client\Configuration::getDefaultConfiguration()->setAccessToken($accessToken);
 }
 
 function getPpAccountsApi($config) {
