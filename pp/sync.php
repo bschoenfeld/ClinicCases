@@ -6,6 +6,12 @@ require('../db.php');
 require('api.php');
 
 try {
+    $clinicId = NULL;
+
+    if (isset($_GET['clinicId'])) {
+        $clinicId = $_GET['clinicId'];
+    }
+
     // Connect to PP
     $ppApiConfig = getApiConfig($dbh);
     $ppAccountsApi = getPpAccountsApi($ppApiConfig);
@@ -13,13 +19,11 @@ try {
 
     // Get PP contacts
     $ppContacts = getPpContacts($ppAccountsApi);
-    //echo 'Found ' . count($ppContacts) . ' PP contacts <br>';
 
     // Get EH contacts
-    $ehData = getEhContacts($dbh);
+    $ehData = getEhContacts($dbh, $clinicId);
     $ehContacts = $ehData['contacts'];
     $ehDeletedCases = $ehData['deleted'];
-    //echo 'Found ' . count($ehContacts) . ' EH contacts <br>';
 
     $toSync = array(
         'adds' => array(),
