@@ -10,8 +10,20 @@ try {
     $ppApiConfig = getApiConfig($dbh);
     $ppAccountsApi = getPpAccountsApi($ppApiConfig);
     $ppCustomFields = getPpCustomFields($ppApiConfig);
-    
-    createPpContact($_POST, $ppAccountsApi, $ppCustomFields);
+
+    $contact = $_POST;
+    createPpContact($contact, $ppAccountsApi, $ppCustomFields);
+
+    $now = new DateTime("now");
+    $q = $dbh->prepare("INSERT INTO pp_actions (id, action, clinicId, name, user, time) VALUES (NULL, :action, :clinicId, :name, :user, :time);");
+    $data = array(
+        'action' => 'add',
+        'clinicId' => $contact['ehCaseNumber'],
+        'name' => $contact['firstName'] . ' ' . $contact['lastName'],
+        'user' => $_SESSION['login'],
+        'time' => $now->format('Y-m-d H:i:s')
+    );
+    $q->execute($data);
 
     header('Content-type: application/json');
     echo json_encode(array('success'=>true));

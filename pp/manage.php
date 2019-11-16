@@ -3,7 +3,7 @@
 session_start();
 require('../lib/php/auth/session_check.php');
 
-if ($_SESSION['permissions']['group_name'] != 'admin') {
+if ($_SESSION['group'] != 'admin') {
     exit('You do not have permission');
 }
 
@@ -101,6 +101,7 @@ if ($_SESSION['permissions']['group_name'] != 'admin') {
             window.toSync = null;
 
             $('#sync-details').html("Preparing Sync");
+            $('#sync-status').html("");
             $('#sync-run-button').hide();
             $('#conflict-run-button').hide();
 

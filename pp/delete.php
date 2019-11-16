@@ -10,7 +10,19 @@ try {
     $ppApiConfig = getApiConfig($dbh);
     $ppAccountsApi = getPpAccountsApi($ppApiConfig);
     
-    $ppAccountsApi->accountsDelete($_POST['accountId']);
+    $contact = $_POST;
+    $ppAccountsApi->accountsDelete($contact['accountId']);
+
+    $now = new DateTime("now");
+    $q = $dbh->prepare("INSERT INTO pp_actions (id, action, clinicId, name, user, time) VALUES (NULL, :action, :clinicId, :name, :user, :time);");
+    $data = array(
+        'action' => 'delete',
+        'clinicId' => $contact['ehCaseNumber'],
+        'name' => $contact['firstName'] . ' ' . $contact['lastName'],
+        'user' => $_SESSION['login'],
+        'time' => $now->format('Y-m-d H:i:s')
+    );
+    $q->execute($data);
 
     header('Content-type: application/json');
     echo json_encode(array('success'=>true));

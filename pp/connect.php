@@ -4,7 +4,7 @@ require('../lib/php/auth/session_check.php');
 require('../db.php');
 require_once('../vendor/autoload.php');
 
-if ($_SESSION['permissions']['group_name'] != 'admin') {
+if ($_SESSION['group'] != 'admin') {
     exit('You do not have permission');
 }
 

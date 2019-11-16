@@ -11,7 +11,7 @@ try {
 
     if (isset($_GET['clinicId'])) {
         $clinicId = $_GET['clinicId'];
-    } else if ($_SESSION['permissions']['group_name'] != 'admin') {
+    } else if ($_SESSION['group'] != 'admin') {
         exit('You do not have permission');
     }
     
