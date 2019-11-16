@@ -5,6 +5,10 @@ require('../lib/php/auth/session_check.php');
 require('../db.php');
 require('api.php');
 
+if ($_SESSION['permissions']['group_name'] != 'admin') {
+    exit('You do not have permission');
+}
+
 try {
     // Connect to PP
     $ppApiConfig = getApiConfig($dbh);

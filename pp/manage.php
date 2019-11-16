@@ -1,8 +1,11 @@
-
 <?php
 
 session_start();
 require('../lib/php/auth/session_check.php');
+
+if ($_SESSION['permissions']['group_name'] != 'admin') {
+    exit('You do not have permission');
+}
 
 ?>
 

@@ -4,6 +4,10 @@ require('../lib/php/auth/session_check.php');
 require('../db.php');
 require_once('../vendor/autoload.php');
 
+if ($_SESSION['permissions']['group_name'] != 'admin') {
+    exit('You do not have permission');
+}
+
 try
 {
     $provider = new \League\OAuth2\Client\Provider\GenericProvider([

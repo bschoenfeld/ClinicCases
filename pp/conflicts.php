@@ -11,6 +11,8 @@ try {
 
     if (isset($_GET['clinicId'])) {
         $clinicId = $_GET['clinicId'];
+    } else if ($_SESSION['permissions']['group_name'] != 'admin') {
+        exit('You do not have permission');
     }
     
     // Connect to PP
