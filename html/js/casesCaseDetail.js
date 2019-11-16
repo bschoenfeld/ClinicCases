@@ -251,8 +251,78 @@ function tabCheckDirty(el) {
     }
 }
 
+function runSyncTask(tasks, name, statusId, next) {
+    var allDone = true;
+
+    $.each(tasks, function(i) {
+        var task = this;
+        if(task.done) return true;
+
+        allDone = false;
+
+        $.post('pp/' + name + '.php', task, function() {
+                task.done = true;
+                $(statusId).html('Running conflict check');
+                runSyncTask(tasks, name, statusId, next);
+            }, function(e){
+                console.log(e);
+                conflictCheckFinally("No - something went wrong with conflict check");
+            });
+        return false;
+    });
+
+    if(allDone) next();
+}
+
+function runNextAdd() {
+    runSyncTask(window.toSync.adds, 'add', '.initial_conflicts_checked_display .case_data_value', runNextDelete);
+}
+
+function runNextDelete() {
+    runSyncTask(window.toSync.deletes, 'delete', '.initial_conflicts_checked_display .case_data_value', runConflictCheck);
+}
+
+function runConflictCheck() {
+    $.get('pp/conflicts.php?caseId=' + window.conflictCaseId, function(data){
+        console.log(data);
+        var conflicts = JSON.parse(data).conflicts;
+        if (conflicts.length) {
+            $('#conflict-status').html(conflicts.length + ' conflicts found');
+            $.each(conflicts, function() {
+                            
+            });
+        } else {
+            $('#conflict-status').html('No conflicts found');
+        }
+        conflictCheckFinally("Yes");
+    }, function(e){
+        console.log(e);
+        conflictCheckFinally("No - something went wrong with conflict check");
+    });
+}
+
+function conflictCheckFinally(message) {
+    $('.initial_conflicts_checked_display .case_data_value').html(message);
+    $('.initial_conflicts_checked_display button').html('Check');
+    $('.initial_conflicts_checked_display button').attr("disabled", null);
+}
+
 //Check for conflicts
 function checkConflicts(caseId) {
+    $('.initial_conflicts_checked_display button').html('Checking');
+    $('.initial_conflicts_checked_display button').attr("disabled", "disabled");
+
+    $.get('pp/sync.php?caseId=' + caseId, function(data) {
+        console.log(data);
+        window.toSync = JSON.parse(data);
+        window.conflictCaseId = caseId;
+        runNextAdd();
+    }, function(response) {
+        conflictCheckFinally('No - something went wrong with conflict check');
+    });
+}
+
+function checkConflictsOld(caseId) {
     $('.initial_conflicts_checked_display button').html('Checking');
     $('.initial_conflicts_checked_display button').attr("disabled", "disabled");
 

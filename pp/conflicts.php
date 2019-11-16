@@ -7,10 +7,13 @@ require('api.php');
 
 try {
     $clinicId = NULL;
+    $caseId = NULL;
     $matchThreshold = 80;
 
     if (isset($_GET['clinicId'])) {
         $clinicId = $_GET['clinicId'];
+    } else if (isset($_GET['caseId'])) {
+        $caseId = $_GET['caseId'];
     } else if ($_SESSION['group'] != 'admin') {
         exit('You do not have permission');
     }
@@ -24,7 +27,7 @@ try {
     $ppContacts = getPpContacts($ppAccountsApi);
     
     // Get EH contacts
-    $ehData = getEhContacts($dbh, $clinicId);
+    $ehData = getEhContacts($dbh, $clinicId, $caseId);
     $ehContacts = $ehData['contacts'];
 
     $conflictCheck = array(

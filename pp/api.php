@@ -114,26 +114,29 @@ function getPpContacts($apiInstance, $onlyFromEh=false) {
     return $contacts;
 }
 
-function getEhContacts($dbh, $clinicId=NULL) {
+function getEhContacts($dbh, $clinicId=NULL, $caseId=NULL) {
     $contacts = array();
     $deleted = array();
+
+    $whereClause = "";
+
+    if ($clinicId != null) {
+        $whereClause = " WHERE clinic_id = ?";
+    } else if($caseId != null) {
+        $whereClause = " WHERE id = ?";
+    }
 
     $q = $dbh->prepare("SELECT clinic_id, first_name, last_name,
         landlord_first_name, landlord_last_name,
         property_manager_first_name, property_manager_last_name,
         other_party_a_first_name, other_party_a_last_name, other_party_a_adverse,
         other_party_b_first_name, other_party_b_last_name, other_party_b_adverse,
-        other_party_c_first_name, other_party_c_last_name, other_party_c_adverse FROM cm");
+        other_party_c_first_name, other_party_c_last_name, other_party_c_adverse FROM cm" . $whereClause);
 
     if ($clinicId != null) {
-        $q = $dbh->prepare("SELECT clinic_id, first_name, last_name,
-            landlord_first_name, landlord_last_name,
-            property_manager_first_name, property_manager_last_name,
-            other_party_a_first_name, other_party_a_last_name, other_party_a_adverse,
-            other_party_b_first_name, other_party_b_last_name, other_party_b_adverse,
-            other_party_c_first_name, other_party_c_last_name, other_party_c_adverse FROM cm
-            WHERE clinic_id = ?");
         $q->bindParam(1, $clinicId);
+    } else if($caseId != null) {
+        $q->bindParam(1, $caseId);
     }
 
     $q->execute();
