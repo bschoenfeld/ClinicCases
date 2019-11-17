@@ -50,6 +50,8 @@
 
 			<?php foreach ($dta as $d) {extract($d);
 
+			if($db_name === 'vplc_conflicts_notes') continue;
+
 			if ($section_header != null)
 			{ ?>
 				</div>
@@ -256,7 +258,16 @@
 					<?php
 					//first check if this is a serialized value
 					$items = @unserialize($value);
-					if ($items !== false)
+					if ($items !== false && $db_name === 'vplc_conflicts_notes')
+					{
+						foreach($items as $item) {
+							echo $item['eh']['firstName'] . ' ' . $item['eh']['lastName'];
+							echo ' may conflict with ';
+							echo $item['pp']['firstName'] . ' ' . $item['pp']['lastName'];
+							echo ' in PP<br>';
+						}
+					}
+					elseif ($items !== false)
 					{
 						$val = null;
 						foreach ($items as $key => $item) {

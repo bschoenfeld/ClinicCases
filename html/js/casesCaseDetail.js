@@ -283,16 +283,22 @@ function runNextDelete() {
 }
 
 function runConflictCheck() {
+    $('.initial_conflicts_checked_display .case_data_value').html('Finishing conflict check');
     $.get('pp/conflicts.php?caseId=' + window.conflictCaseId, function(data){
         console.log(data);
+        $('.vplc_conflicts_review_needed_display .case_data_value').html(data.reviewNeeded);
         var conflicts = JSON.parse(data).conflicts;
         if (conflicts.length) {
-            $('#conflict-status').html(conflicts.length + ' conflicts found');
+            $('.vplc_conflicts_notes_display .case_data_value').html('');
             $.each(conflicts, function() {
-                            
+                var msg = this.eh.firstName + ' ' + this.eh.lastName;
+                msg += ' may conflict with ';
+                msg += this.pp.firstName + ' ' + this.pp.lastName;
+                msg += ' in PP<br>';
+                $('.vplc_conflicts_notes_display .case_data_value').append(msg);
             });
         } else {
-            $('#conflict-status').html('No conflicts found');
+            $('.vplc_conflicts_notes_display .case_data_value').html('No conflicts found');
         }
         conflictCheckFinally("Yes");
     }, function(e){
@@ -311,6 +317,7 @@ function conflictCheckFinally(message) {
 function checkConflicts(caseId) {
     $('.initial_conflicts_checked_display button').html('Checking');
     $('.initial_conflicts_checked_display button').attr("disabled", "disabled");
+    $('.initial_conflicts_checked_display .case_data_value').html('Starting conflict check');
 
     $.get('pp/sync.php?caseId=' + caseId, function(data) {
         console.log(data);

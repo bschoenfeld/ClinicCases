@@ -69,6 +69,90 @@ try {
         }
     }
 
+    if ($clinicId != null || $caseId != null) {
+
+        // Get conflict notes
+        $whereClause = "";
+        if ($clinicId != null) {
+            $whereClause = " WHERE clinic_id = ?";
+        } else if($caseId != null) {
+            $whereClause = " WHERE id = ?";
+        }
+
+        $q = $dbh->prepare("SELECT id, vplc_conflicts_review_needed, vplc_conflicts_notes FROM cm" . $whereClause);
+        if ($clinicId != null)  $q->bindParam(1, $clinicId);
+        else if($caseId != null)  $q->bindParam(1, $caseId);
+        $q->execute();
+        $case = $q->fetchAll(PDO::FETCH_ASSOC)[0];
+
+        $caseId = $case['id'];
+        $conflicts_review_needed = $case['conflicts_review_needed'];
+        $existingConflicts = $case['vplc_conflicts_notes'];
+        if ($existingConflicts != null) {
+            $existingConflicts = unserialize($existingConflicts);
+        }
+
+        // see if the number of conflicts match and the names of the eh contacts match
+        // if they dont match, replace the conflicts in the notes with the new contacts
+        // then go back through and see if any of the stored conflicts match and have been checked
+
+        // set review need to YES
+        if (count($conflictCheck['conflicts']) == 0) {
+            // Currently no conflicts, so clear them all
+            $conflicts_review_needed = 'No';
+        } else {
+            // If there are conflicts, then see if they've changed
+            // If the conflict already exists, copy the propety indicating if they've been cleared
+            $conflictsChanged = false;
+
+            if (count($existingConflict) != count($conflictCheck['conflicts'])) {
+                $conflictsChanged = true;
+            }
+            
+            foreach ($existingConflicts as $existingConflict) {
+                $matchFound = false;
+
+                foreach($conflictCheck['conflicts'] as $newConflict) {
+                    if ($newConflict['eh']['firstName'] == $existingConflict['eh']['firstName'] &&
+                        $newConflict['eh']['lastName'] == $existingConflict['eh']['lastName'] && 
+                        $newConflict['pp']['firstName'] == $existingConflict['pp']['firstName'] &&
+                        $newConflict['pp']['lastName'] == $existingConflict['pp']['lastName'])
+                    {
+                        $matchFound = true;
+                        $newConflict['cleared'] = $existingConflict['cleared'];
+                    }
+                }
+
+                if (!$matchFound) {
+                    $conflictsChanged = true;
+                }
+            }
+
+            if ($conflictsChanged) {
+                $conflicts_review_needed = 'Yes';
+
+                // Send email
+                $get_emails = $dbh->prepare("SELECT email FROM cm_users WHERE grp = 'admin' AND status = 'active'");
+                $get_emails->execute();
+                $emails = $get_emails->fetchAll(PDO::FETCH_ASSOC);
+                $subject = "ClinicCases " . CC_PROGRAM_NAME . ": Conflict found";
+                $message = "Conflict found for " . $conflictCheck['conflicts'][0]['eh']['ehCaseNumber'];
+
+                foreach ($emails as $e) {
+                    mail($e['email'],$subject,$message,CC_EMAIL_HEADERS,"-f ". CC_EMAIL_FROM);
+                }
+            }
+        }
+
+        $q = $dbh->prepare("UPDATE cm SET initial_conflicts_checked = 'Yes', vplc_conflicts_review_needed = ?, vplc_conflicts_notes = ? WHERE id = ?");
+        $q->bindParam(1, $conflicts_review_needed);
+        $q->bindParam(2, serialize($conflictCheck['conflicts']));
+        $q->bindParam(3, $caseId);
+        $q->execute();
+
+        $conflictCheck['reviewNeeded'] = $conflicts_review_needed;
+    }
+
     header('Content-type: application/json');
     echo json_encode($conflictCheck);
 
