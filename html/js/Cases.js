@@ -134,6 +134,7 @@ $(document).ready(function() {
                             '<option value="intake">Intake</option>' +
                             '<option value="advice">Advice</option>' +
                             '<option value="urgent">Urgent Cases</option>' +
+                            '<option value="important">Important Date Cases</option>' +
                             '<option value="followup">VPLC Follow Up</option>' +
                             '<option value="review">VPLC Review</option>' +
                             '</select>  <a href="#" id="set_advanced">Advanced Search</a>');
@@ -271,6 +272,21 @@ $(document).ready(function() {
                                         oTable.fnFilter('yes', oTable.fnGetColumnIndex('Urgent situation (per guidelines)'));
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date of 3rd advice attempt (unsuccessful)'), true, false);
                                         oTable.fnFilter('^$', oTable.fnGetColumnIndex('Date of advice call'), true, false);
+                                        break;
+                                    
+                                    case 'important':
+                                        chooserVal = 'important';
+                                        visCols = [
+                                            'Last Name',
+                                            'First Name',
+                                            'Date of first call/message to Helpline',
+                                            'Date intake complete',
+                                            'Date of advice call',
+                                            'Important upcoming date 1',
+                                            'Important upcoming date 1 description',
+                                            'Important upcoming date 1 description (other)',
+                                        ];
+                                        sortCol = 'Important upcoming date 1';
                                         break;
 
                                     case 'followup':
