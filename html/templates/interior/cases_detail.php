@@ -54,26 +54,29 @@
 
 	<ul class = "case_detail_nav_list">
 
-		<li id="item1" class="selected">Case Notes</li>
+	<?php if ($_SESSION['permissions']['group_name'] != "cc_agent") {
+		echo "<li id='item1' class='selected'>Case Notes</li>";
 
-		<li id="item3">Documents</li>
-		
+		echo "<li id='item3'>Documents</li>";
+	} ?>
+
 		<li id="item2">Case Data</li>
 
-		<li id="item4">Events</li>
+	<?php if ($_SESSION['permissions']['group_name'] != "cc_agent") {
+		echo "<li id='item4'>Events</li>";
 
-		<li id="item5">Messages</li>
+		echo "<li id='item5'>Messages</li>";
 
-		<li id="item6">Contacts</li>
+		echo "<li id='item6'>Contacts</li>";
 
-		<li id="item7">Conflicts <span class="conflicts_number"></span></li>
+		echo "<li id='item7'>Conflicts <span class='conflicts_number'></span></li>";
+	} ?>
 
 	</ul>
 
 </div>
 
 <div class = "case_detail_panel">
-
 
 
 
