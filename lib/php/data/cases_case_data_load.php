@@ -25,6 +25,9 @@ $columns = $q->fetchAll(PDO::FETCH_ASSOC);
 $dta = null;
 
 foreach ($columns as $col) {
+	if ($_SESSION['group'] == 'cc_agent' && $col['hide_cc_agent']) {
+		continue;
+	}
 	if ($_SESSION['group'] == 'volunteer' && $col['hide_volunteer']) {
 		continue;
 	}
