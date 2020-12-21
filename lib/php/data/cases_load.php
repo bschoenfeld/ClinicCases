@@ -34,7 +34,7 @@ if ($_SESSION['permissions']['view_all_cases'] == "0") {
     $sql = "SELECT $col_vals FROM cm WHERE cm.opened_by = :username AND cm.first_name <> 'DELETED'";
 } elseif ($_SESSION['permissions']['view_all_cases'] == "1") {
     //admin or super user type query - Users who can access all cases and "work" on all cases.
-    $sql = "SELECT $col_vals FROM cm where cm.first_name <> 'DELETED'";
+    $sql = "SELECT $col_vals FROM cm where cm.opened_by NOT LIKE '_test' AND cm.first_name <> 'DELETED'";
 } else {
     echo "There is configuration error in your groups."; die;
 }
