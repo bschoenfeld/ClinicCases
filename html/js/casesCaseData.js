@@ -328,7 +328,11 @@ $('button.case_data_delete').live('click', function () {
                     if (!serverResponse.error) {
                         var el = $('a[href="#' + tgt + '"]').closest('li');
                         closeCaseTab(true,el);
-                        oTable.fnReloadAjax();
+                        
+                        ColReorder.fnReset(oTable);
+                        oTable.fnReloadAjax(null, function() {
+                            $('#chooser').change();
+                        });
                     }
                     notify(serverResponse.message);
                 });

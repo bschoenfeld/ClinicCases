@@ -45,9 +45,11 @@ $assigned_users_query = $dbh->prepare("SELECT cm_case_assignees.id as assign_id,
 	$assigned_users_data = $assigned_users_query->fetchAll(PDO::FETCH_ASSOC);
 
 	//Check to see if the user has permission to view the case selected.  This is for the situation when a case is called via url.
-	$check_permission = array_searchRecursive($username,$assigned_users_data);
+    $check_permission = array_searchRecursive($username,$assigned_users_data);
 
-	if (!$check_permission AND !$_SESSION['permissions']['view_all_cases'] == '1')
+    $created_case = $case_data->opened_by == $username;
+    
+	if (!$created_case AND !$check_permission AND !$_SESSION['permissions']['view_all_cases'] == '1')
 		{echo "Sorry, you do not have permission to view this case. <br /><br />If you need to see this case, please <a href='mailto:" . CC_ADMIN_EMAIL . "'> ask your administrator you to assign you to the case temporarily.";die;}
 
 include '../../../html/templates/interior/cases_detail.php';
